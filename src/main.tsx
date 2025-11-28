@@ -13,14 +13,14 @@ createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <ThemeProvider>
             <QueryClientProvider client={queryClient}>
-            <BrowserRouter>
-                <RouteProvider>
-                    <Routes>
-                        <Route path="/" element={<HomeScreen />} />
-                        <Route path="*" element={<NotFound />} />
-                    </Routes>
-                </RouteProvider>
-            </BrowserRouter>
+                <BrowserRouter>
+                    <RouteProvider>
+                        <Routes>
+                            <Route path="/" element={<HomeScreen />} />
+                            <Route path="*" element={<NotFound />} />
+                        </Routes>
+                    </RouteProvider>
+                </BrowserRouter>
             </QueryClientProvider>
         </ThemeProvider>
     </StrictMode>,

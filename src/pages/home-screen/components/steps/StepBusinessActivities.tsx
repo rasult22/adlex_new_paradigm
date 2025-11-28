@@ -13,7 +13,13 @@ export const StepBusinessActivities = ({
     onActivitiesChange,
     error,
 }: StepBusinessActivitiesProps) => {
-    const [activities, setActivities] = useState<BusinessActivity[]>([]);
+    const [activities, setActivities] = useState<BusinessActivity[]>([
+        {
+            id: 'test',
+            label: 'test',
+            description: 'test',
+        },
+    ]);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
@@ -77,6 +83,7 @@ export const StepBusinessActivities = ({
                     size="md"
                     isInvalid={!!error}
                     hint={error}
+                    onSelectionChange={(key) => handleSelectionChange(key as string)}
                     items={activities.map(activity => ({
                         id: activity.id,
                         label: activity.label,

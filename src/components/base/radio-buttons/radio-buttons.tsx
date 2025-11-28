@@ -119,7 +119,7 @@ interface RadioGroupProps extends RadioGroupContextType, AriaRadioGroupProps {
 export const RadioGroup = ({ children, className, size = "sm", ...props }: RadioGroupProps) => {
     return (
         <RadioGroupContext.Provider value={{ size }}>
-            <AriaRadioGroup {...props} className={cx("flex flex-col gap-4", className)}>
+            <AriaRadioGroup {...props} className={cx("flex flex-col gap-4 relative", className)}>
                 {children}
             </AriaRadioGroup>
         </RadioGroupContext.Provider>

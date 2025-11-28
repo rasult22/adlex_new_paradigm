@@ -19,6 +19,7 @@ interface FormContainerProps {
     canGoNext: boolean;
     canGoPrevious: boolean;
     isLastStep: boolean;
+    isLoading?: boolean;
 }
 
 const STEPS: { id: FormStep; title: string; number: number }[] = [
@@ -41,6 +42,7 @@ export const FormContainer = ({
     canGoNext,
     canGoPrevious,
     isLastStep,
+    isLoading = false,
 }: FormContainerProps) => {
     const currentStepIndex = STEPS.findIndex(s => s.id === currentStep);
     const currentStepInfo = STEPS[currentStepIndex];
@@ -50,17 +52,17 @@ export const FormContainer = ({
             case 'contact-email':
                 return (
                     <StepContactEmail
-                        value={formData.contactEmail || ''}
-                        onChange={(value) => onFormDataChange({ ...formData, contactEmail: value })}
+                        value={formData.contact_email || ''}
+                        onChange={(value) => onFormDataChange({ ...formData, contact_email: value })}
                     />
                 );
             
             case 'business-activities':
                 return (
                     <StepBusinessActivities
-                        selectedActivities={formData.businessActivities || []}
+                        selectedActivities={formData.business_activities || []}
                         onActivitiesChange={(activities) => 
-                            onFormDataChange({ ...formData, businessActivities: activities })
+                            onFormDataChange({ ...formData, business_activities: activities })
                         }
                     />
                 );
@@ -68,11 +70,15 @@ export const FormContainer = ({
             case 'company-names':
                 return (
                     <StepCompanyNames
-                        names={formData.companyNames || ['', '', '']}
+                        names={[
+                            formData.company_name_1 || '',
+                            formData.company_name_2 || '',
+                            formData.company_name_3 || ''
+                        ]}
                         onChange={(index, value) => {
-                            const names = [...(formData.companyNames || ['', '', ''])];
-                            names[index] = value;
-                            onFormDataChange({ ...formData, companyNames: names });
+                            if (index === 0) onFormDataChange({ ...formData, company_name_1: value });
+                            if (index === 1) onFormDataChange({ ...formData, company_name_2: value });
+                            if (index === 2) onFormDataChange({ ...formData, company_name_3: value });
                         }}
                     />
                 );
@@ -80,36 +86,36 @@ export const FormContainer = ({
             case 'visa-packages':
                 return (
                     <StepVisaPackages
-                        value={formData.visaPackages || 0}
-                        onChange={(value) => onFormDataChange({ ...formData, visaPackages: value })}
+                        value={formData.visa_package_quantity || 0}
+                        onChange={(value) => onFormDataChange({ ...formData, visa_package_quantity: value })}
                     />
                 );
             
             case 'shareholders-info':
                 return (
                     <StepShareholdersInfo
-                        numberOfShareholders={formData.numberOfShareholders || 0}
-                        totalShares={formData.totalShares || 0}
+                        numberOfShareholders={formData.number_of_shareholders || 0}
+                        totalShares={formData.total_shares || 0}
                         onNumberOfShareholdersChange={(value) => {
                             const shareholders = Array(value).fill(null).map((_, i) => 
                                 formData.shareholders?.[i] || {
                                     email: '',
                                     phone: '',
-                                    numberOfShares: 0,
-                                    role: 'Shareholder',
-                                    residentialAddress: '',
-                                    isUAEResident: false,
-                                    isPEP: false,
+                                    number_of_shares: 0,
+                                    roles: ['Shareholder'],
+                                    residential_address: '',
+                                    is_uae_resident: false,
+                                    is_pep: false,
                                 }
                             );
                             onFormDataChange({ 
                                 ...formData, 
-                                numberOfShareholders: value,
+                                number_of_shareholders: value,
                                 shareholders 
                             });
                         }}
                         onTotalSharesChange={(value) => 
-                            onFormDataChange({ ...formData, totalShares: value })
+                            onFormDataChange({ ...formData, total_shares: value })
                         }
                     />
                 );
@@ -118,7 +124,7 @@ export const FormContainer = ({
                 return (
                     <StepShareholderDetails
                         shareholders={formData.shareholders || []}
-                        totalShares={formData.totalShares || 0}
+                        totalShares={formData.total_shares || 0}
                         onShareholderChange={(index, data) => {
                             const shareholders = [...(formData.shareholders || [])];
                             shareholders[index] = { ...shareholders[index], ...data };
@@ -139,7 +145,13 @@ export const FormContainer = ({
     };
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full relative">
+            {/* Loading Overlay */}
+            {isLoading && (
+                <div className="absolute inset-0 bg-primary/50 backdrop-blur-sm z-50 flex items-center justify-center">
+                    <div className="text-primary font-medium">Saving...</div>
+                </div>
+            )}
             {/* Progress Indicator */}
             <div className="border-b border-border-primary p-6">
                 <div className="flex items-center justify-between mb-4">

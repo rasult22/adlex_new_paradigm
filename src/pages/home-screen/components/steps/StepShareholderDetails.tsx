@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Input } from '@/components/base/input/input';
-import { Select } from '@/components/base/select/select';
+import { Checkbox } from '@/components/base/checkbox/checkbox';
 import { RadioButton, RadioGroup } from '@/components/base/radio-buttons/radio-buttons';
 import { FileUpload } from '@/components/application/file-upload/file-upload-base';
-import type { ShareholderData } from '../types';
+import type { ShareholderData, ShareholderRole } from '../types';
 
 interface StepShareholderDetailsProps {
     shareholders: ShareholderData[];
@@ -12,11 +12,11 @@ interface StepShareholderDetailsProps {
     errors?: Record<number, Partial<Record<keyof ShareholderData, string>>>;
 }
 
-const ROLES = [
-    { id: 'Shareholder', label: 'Shareholder' },
-    { id: 'General Manager', label: 'General Manager' },
-    { id: 'Director', label: 'Director' },
-    { id: 'Secretary', label: 'Secretary' },
+const ROLES: ShareholderRole[] = [
+    'Shareholder',
+    'General Manager',
+    'Director',
+    'Secretary',
 ];
 
 export const StepShareholderDetails = ({
@@ -47,7 +47,7 @@ export const StepShareholderDetails = ({
 
                 if (progress >= 100) {
                     clearInterval(interval);
-                    onShareholderChange(index, { passportScan: file });
+                    onShareholderChange(index, { passport_scan: file });
                 }
             }, 200);
         }
@@ -59,7 +59,7 @@ export const StepShareholderDetails = ({
             delete updated[index];
             return updated;
         });
-        onShareholderChange(index, { passportScan: undefined });
+        onShareholderChange(index, { passport_scan: undefined });
     };
 
     return (
@@ -75,7 +75,7 @@ export const StepShareholderDetails = ({
                 {shareholders.map((shareholder, index) => {
                     const shareholderErrors = errors[index] || {};
                     const allocatedShares = shareholders.reduce((sum, sh, i) => 
-                        i !== index ? sum + (sh.numberOfShares || 0) : sum, 0
+                        i !== index ? sum + (sh.number_of_shares || 0) : sum, 0
                     );
                     const remainingShares = totalShares - allocatedShares;
 
@@ -116,8 +116,8 @@ export const StepShareholderDetails = ({
                                         </FileUpload.List>
                                     )}
                                 </FileUpload.Root>
-                                {shareholderErrors.passportScan && (
-                                    <p className="text-sm text-error-primary mt-1">{shareholderErrors.passportScan}</p>
+                                {shareholderErrors.passport_scan && (
+                                    <p className="text-sm text-error-primary mt-1">{shareholderErrors.passport_scan}</p>
                                 )}
                             </div>
 
@@ -151,44 +151,54 @@ export const StepShareholderDetails = ({
                             <Input
                                 label="Number of Shares"
                                 type="number"
-                                value={shareholder.numberOfShares?.toString() || ''}
+                                value={shareholder.number_of_shares?.toString() || ''}
                                 onChange={(value) => onShareholderChange(index, { 
-                                    numberOfShares: parseInt(value) || 0 
+                                    number_of_shares: parseInt(value) || 0 
                                 })}
                                 placeholder="0"
                                 isRequired
-                                isInvalid={!!shareholderErrors.numberOfShares}
-                                hint={shareholderErrors.numberOfShares || `Remaining shares: ${remainingShares}`}
+                                isInvalid={!!shareholderErrors.number_of_shares}
+                                hint={shareholderErrors.number_of_shares || `Remaining shares: ${remainingShares}`}
                                 size="md"
                             />
 
-                            {/* Role */}
-                            <Select
-                                label="Role in Company"
-                                placeholder="Select role"
-                                size="md"
-                                isRequired
-                                selectedKey={shareholder.role}
-                                onSelectionChange={(key) => onShareholderChange(index, { 
-                                    role: key as ShareholderData['role']
-                                })}
-                                items={ROLES}
-                                hint={shareholderErrors.role}
-                            >
-                                {(item) => <Select.Item key={item.id} id={item.id}>{item.label}</Select.Item>}
-                            </Select>
+                            {/* Roles */}
+                            <div>
+                                <label className="block text-sm font-medium text-secondary mb-3">
+                                    Role(s) in Company <span className="text-error-primary">*</span>
+                                </label>
+                                <div className="space-y-2">
+                                    {ROLES.map((role) => (
+                                        <Checkbox
+                                            key={role}
+                                            label={role}
+                                            isSelected={shareholder.roles?.includes(role) || false}
+                                            onChange={(isSelected) => {
+                                                const currentRoles = shareholder.roles || [];
+                                                const newRoles = isSelected
+                                                    ? [...currentRoles, role]
+                                                    : currentRoles.filter(r => r !== role);
+                                                onShareholderChange(index, { roles: newRoles });
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                                {shareholderErrors.roles && (
+                                    <p className="text-sm text-error-primary mt-1">{shareholderErrors.roles}</p>
+                                )}
+                            </div>
 
                             {/* Residential Address */}
                             <Input
                                 label="Residential Address"
-                                value={shareholder.residentialAddress || ''}
+                                value={shareholder.residential_address || ''}
                                 onChange={(value) => onShareholderChange(index, { 
-                                    residentialAddress: value 
+                                    residential_address: value 
                                 })}
                                 placeholder="Full residential address"
                                 isRequired
-                                isInvalid={!!shareholderErrors.residentialAddress}
-                                hint={shareholderErrors.residentialAddress}
+                                isInvalid={!!shareholderErrors.residential_address}
+                                hint={shareholderErrors.residential_address}
                                 size="md"
                             />
 
@@ -198,9 +208,9 @@ export const StepShareholderDetails = ({
                                     UAE Resident <span className="text-error-primary">*</span>
                                 </label>
                                 <RadioGroup
-                                    value={shareholder.isUAEResident?.toString()}
+                                    value={shareholder.is_uae_resident?.toString()}
                                     onChange={(value) => onShareholderChange(index, { 
-                                        isUAEResident: value === 'true' 
+                                        is_uae_resident: value === 'true' 
                                     })}
                                     size="md"
                                 >
@@ -218,9 +228,9 @@ export const StepShareholderDetails = ({
                                     Is this person a politically exposed person or related to one?
                                 </p>
                                 <RadioGroup
-                                    value={shareholder.isPEP?.toString()}
+                                    value={shareholder.is_pep?.toString()}
                                     onChange={(value) => onShareholderChange(index, { 
-                                        isPEP: value === 'true' 
+                                        is_pep: value === 'true' 
                                     })}
                                     size="md"
                                 >

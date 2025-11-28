@@ -1,7 +1,13 @@
 import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { AIChat } from './components/AIChat';
 import { FormContainer } from './components/FormContainer';
 import type { ChatMessage, FormData, FormStep } from './components/types';
+import { 
+    createLicenseApplication, 
+    updateLicenseApplication,
+    type LicenseApplicationInput 
+} from '@/queries';
 
 const STEP_ORDER: FormStep[] = [
     'contact-email',
@@ -14,6 +20,11 @@ const STEP_ORDER: FormStep[] = [
     'kyc',
 ];
 
+// Generate a unique session ID
+const generateSessionId = () => {
+    return `session_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+};
+
 export const HomeScreen = () => {
     // Layout state
     const [isFormVisible, setIsFormVisible] = useState(false);
@@ -25,18 +36,50 @@ export const HomeScreen = () => {
     // Form state
     const [currentStep, setCurrentStep] = useState<FormStep>('contact-email');
     const [formData, setFormData] = useState<Partial<FormData>>({
-        contactEmail: '',
-        businessActivities: [],
-        companyNames: ['', '', ''],
-        visaPackages: 0,
-        numberOfShareholders: 0,
-        totalShares: 0,
+        contact_email: '',
+        business_activities: [],
+        company_name_1: '',
+        company_name_2: '',
+        company_name_3: '',
+        visa_package_quantity: 0,
+        number_of_shareholders: 0,
+        total_shares: 0,
         shareholders: [],
+    });
+
+    // Mutation for creating license application
+    const createApplicationMutation = useMutation({
+        mutationFn: createLicenseApplication,
+        onSuccess: (data) => {
+            setFormData(prev => ({
+                ...prev,
+                application_id: data.id,
+                session_id: data.session_id,
+            }));
+        },
+        onError: (error) => {
+            console.error('Failed to create license application:', error);
+            // TODO: Show error to user
+        },
+    });
+
+    // Mutation for updating license application
+    const updateApplicationMutation = useMutation({
+        mutationFn: ({ applicationId, data }: { applicationId: string; data: LicenseApplicationInput }) =>
+            updateLicenseApplication(applicationId, data),
+        onError: (error) => {
+            console.error('Failed to update license application:', error);
+            // TODO: Show error to user
+        },
     });
 
     // Chat handlers
     const handleStart = () => {
         setIsFormVisible(true);
+        
+        // Generate session ID and create license application
+        const sessionId = generateSessionId();
+        createApplicationMutation.mutate(sessionId);
         
         // Add welcome message from AI
         const welcomeMessage: ChatMessage = {
@@ -77,6 +120,51 @@ export const HomeScreen = () => {
     // Form navigation handlers
     const handleNext = () => {
         const currentIndex = STEP_ORDER.indexOf(currentStep);
+        
+        // Save current step data to backend before moving to next step
+        if (formData.application_id) {
+            const updateData: LicenseApplicationInput = {};
+            
+            // Map form data to API format based on current step
+            switch (currentStep) {
+                case 'business-activities':
+                    updateData.business_activities = formData.business_activities;
+                    break;
+                case 'company-names':
+                    updateData.company_name_1 = formData.company_name_1;
+                    updateData.company_name_2 = formData.company_name_2;
+                    updateData.company_name_3 = formData.company_name_3;
+                    break;
+                case 'visa-packages':
+                    updateData.visa_package_quantity = formData.visa_package_quantity;
+                    break;
+                case 'shareholders-info':
+                    updateData.number_of_shareholders = formData.number_of_shareholders;
+                    updateData.total_shares = formData.total_shares;
+                    break;
+                case 'shareholder-details':
+                    // Convert ShareholderData to ShareholderInput (remove passport_scan)
+                    updateData.shareholders = formData.shareholders?.map(sh => ({
+                        email: sh.email,
+                        phone: sh.phone,
+                        number_of_shares: sh.number_of_shares,
+                        roles: sh.roles,
+                        residential_address: sh.residential_address,
+                        is_uae_resident: sh.is_uae_resident,
+                        is_pep: sh.is_pep,
+                    }));
+                    break;
+            }
+            
+            // Update if there's data to save
+            if (Object.keys(updateData).length > 0) {
+                updateApplicationMutation.mutate({
+                    applicationId: formData.application_id,
+                    data: updateData,
+                });
+            }
+        }
+        
         if (currentIndex < STEP_ORDER.length - 1) {
             setCurrentStep(STEP_ORDER[currentIndex + 1]);
         } else {
@@ -97,27 +185,27 @@ export const HomeScreen = () => {
         // Basic validation - can be enhanced
         switch (currentStep) {
             case 'contact-email':
-                return !!formData.contactEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contactEmail);
+                return !!formData.contact_email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contact_email);
             case 'business-activities':
-                return (formData.businessActivities?.length || 0) >= 1 && (formData.businessActivities?.length || 0) <= 3;
+                return (formData.business_activities?.length || 0) >= 1 && (formData.business_activities?.length || 0) <= 3;
             case 'company-names':
-                return formData.companyNames?.every(name => name.trim().length > 0) || false;
+                return !!(formData.company_name_1?.trim() && formData.company_name_2?.trim() && formData.company_name_3?.trim());
             case 'visa-packages':
-                return (formData.visaPackages || 0) > 0;
+                return (formData.visa_package_quantity || 0) > 0;
             case 'shareholders-info':
-                return (formData.numberOfShareholders || 0) > 0 && (formData.totalShares || 0) > 0;
+                return (formData.number_of_shareholders || 0) > 0 && (formData.total_shares || 0) > 0;
             case 'shareholder-details':
                 // Check if all shareholders have required data
                 const shareholders = formData.shareholders || [];
-                if (shareholders.length !== formData.numberOfShareholders) return false;
+                if (shareholders.length !== formData.number_of_shareholders) return false;
                 return shareholders.every(sh => 
                     sh.email && 
                     sh.phone && 
-                    sh.numberOfShares > 0 && 
-                    sh.role && 
-                    sh.residentialAddress &&
-                    sh.isUAEResident !== undefined &&
-                    sh.isPEP !== undefined
+                    sh.number_of_shares > 0 && 
+                    sh.roles && 
+                    sh.residential_address &&
+                    sh.is_uae_resident !== undefined &&
+                    sh.is_pep !== undefined
                 );
             default:
                 return true;
@@ -131,6 +219,8 @@ export const HomeScreen = () => {
     const isLastStep = () => {
         return currentStep === STEP_ORDER[STEP_ORDER.length - 1];
     };
+
+    const isLoading = createApplicationMutation.isPending || updateApplicationMutation.isPending;
 
     return (
         <div className="flex h-dvh flex-row bg-primary">
@@ -148,6 +238,7 @@ export const HomeScreen = () => {
                         canGoNext={canGoNext()}
                         canGoPrevious={canGoPrevious()}
                         isLastStep={isLastStep()}
+                        isLoading={isLoading}
                     />
                 </div>
             )}

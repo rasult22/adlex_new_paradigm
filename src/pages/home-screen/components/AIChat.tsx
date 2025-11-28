@@ -85,7 +85,9 @@ export const AIChat = ({
                     <div className="flex gap-2">
                         <Input
                             value={inputValue}
-                            onChange={(e) => onInputChange(e.target.value)}
+                            onChange={(text:string) => {
+                                onInputChange(text)
+                            }}
                             onKeyPress={handleKeyPress}
                             placeholder="Type your message..."
                             className="flex-1"

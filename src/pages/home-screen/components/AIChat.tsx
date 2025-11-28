@@ -31,9 +31,7 @@ export const AIChat = ({
 
     return (
         <div
-            className={`flex flex-col bg-primary h-full transition-all duration-500 ease-in-out ${
-                isFullscreen ? 'w-full' : 'w-96'
-            }`}
+            className={`flex flex-col bg-primary h-full transition-all duration-500 ease-in-out w-full`}
         >
             {/* Header */}
             <div className="border-b border-border-primary p-4">

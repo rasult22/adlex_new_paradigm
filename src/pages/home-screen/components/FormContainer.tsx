@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowRight, Check } from '@untitledui/icons';
 import { Button } from '@/components/base/buttons/button';
+import { AnimatePresence, motion } from 'motion/react';
 import type { FormStep } from './types';
 import { StepContactEmail } from './steps/StepContactEmail';
 import { StepBusinessActivities } from './steps/StepBusinessActivities';
@@ -149,7 +150,7 @@ export const FormContainer = ({
     };
 
     return (
-        <div className="flex flex-col h-full relative">
+        <div className="flex flex-col h-full relative overflow-hidden">
             {/* Loading Overlay */}
             {isLoading && (
                 <div className="absolute inset-0 bg-primary/50 backdrop-blur-sm z-50 flex items-center justify-center">
@@ -158,27 +159,36 @@ export const FormContainer = ({
             )}
             
             {/* Error Banner */}
-            {error && (
-                <div className="absolute top-0 left-0 right-0 z-40 bg-error-primary text-white px-6 py-3 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span className="font-medium">{error}</span>
-                    </div>
-                    {onDismissError && (
-                        <button
-                            onClick={onDismissError}
-                            className="text-white hover:text-white/80 transition-colors"
-                            aria-label="Dismiss error"
-                        >
+            <AnimatePresence>
+                {error && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -50 }}
+                        transition={{ duration: 0.3, ease: 'easeOut' }}
+                        className="absolute top-0 left-0 right-0 z-40 bg-error-primary text-white px-6 py-3 flex items-center justify-between"
+                    >
+                        <div className="flex items-center gap-2">
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                        </button>
-                    )}
-                </div>
-            )}
+                            <span className="font-medium">{error}</span>
+                        </div>
+                        {onDismissError && (
+                            <button
+                                onClick={onDismissError}
+                                className="text-white hover:text-white/80 transition-colors"
+                                aria-label="Dismiss error"
+                            >
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Progress Indicator */}
             <div className="border-b border-border-primary p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -204,8 +214,19 @@ export const FormContainer = ({
             </div>
 
             {/* Step Content */}
-            <div className="flex-1 overflow-y-auto p-6">
-                {renderStep()}
+            <div className="flex-1 overflow-y-auto p-6 relative">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={currentStep}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                        className="h-full"
+                    >
+                        {renderStep()}
+                    </motion.div>
+                </AnimatePresence>
             </div>
 
             {/* Navigation */}

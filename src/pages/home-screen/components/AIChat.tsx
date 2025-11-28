@@ -31,14 +31,14 @@ export const AIChat = ({
 
     return (
         <div
-            className={`flex flex-col bg-primary transition-all duration-500 ease-in-out ${
+            className={`flex flex-col bg-primary h-full transition-all duration-500 ease-in-out ${
                 isFullscreen ? 'w-full' : 'w-96'
             }`}
         >
             {/* Header */}
             <div className="border-b border-border-primary p-4">
-                <h2 className="text-lg font-semibold text-primary">AI Assistant</h2>
-                <p className="text-sm text-tertiary">Ask me anything about the company formation process</p>
+                <h2 className="text-lg font-semibold text-primary">Adlex AI</h2>
+                <p className="text-sm text-tertiary">Open your UAE company fully online — fast, secure, and guided by your personal AI assistant.</p>
             </div>
 
             {/* Messages */}
@@ -46,10 +46,9 @@ export const AIChat = ({
                 {messages.length === 0 && showStartButton && (
                     <div className="flex flex-col items-center justify-center h-full space-y-4">
                         <div className="text-center space-y-2">
-                            <h3 className="text-xl font-semibold text-primary">Welcome to UAE Company Formation</h3>
+                            <h3 className="text-xl font-semibold text-primary">Welcome to Adlex.ai</h3>
                             <p className="text-md text-tertiary max-w-md">
-                                I'll guide you through the process of forming your company in the UAE. 
-                                Click the button below to get started.
+                                👋 Welcome to Adlex.ai! I’ll be your personal AI assistant to guide you through opening your UAE company fully online.
                             </p>
                         </div>
                         <Button size="lg" onClick={onStart}>

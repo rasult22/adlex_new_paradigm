@@ -135,12 +135,10 @@ export const HomeScreen = () => {
     return (
         <div className="flex h-dvh flex-row bg-primary">
             {/* Main Form Area */}
-            <div
-                className={`flex-1 transition-all duration-500 ease-in-out ${
-                    isFormVisible ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'
-                }`}
-            >
-                {isFormVisible && (
+            {isFormVisible &&(
+                <div
+                    className={`flex-1 transition-all duration-500 ease-in-out `}
+                >
                     <FormContainer
                         currentStep={currentStep}
                         formData={formData}
@@ -151,8 +149,8 @@ export const HomeScreen = () => {
                         canGoPrevious={canGoPrevious()}
                         isLastStep={isLastStep()}
                     />
-                )}
-            </div>
+                </div>
+            )}
 
             {/* AI Chat Sidebar */}
             <div className={`border-l border-border-primary ${isFormVisible ? '' : 'flex-1'}`}>

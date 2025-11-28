@@ -7,6 +7,7 @@ import type { ChatMessage, FormData, FormStep } from './components/types';
 import { 
     createLicenseApplication, 
     updateLicenseApplication,
+    uploadPassport,
     type LicenseApplicationInput 
 } from '@/queries';
 
@@ -166,15 +167,41 @@ export const HomeScreen = () => {
             if (Object.keys(updateData).length > 0) {
                 try {
                     // Wait for the mutation to complete
-                    await updateApplicationMutation.mutateAsync({
+                    const response = await updateApplicationMutation.mutateAsync({
                         applicationId: formData.application_id,
                         data: updateData,
                     });
+
+                    // If we are on shareholder details step, handle passport uploads
+                    if (currentStep === 'shareholder-details' && formData.shareholders) {
+                        const uploadPromises = formData.shareholders.map(async (sh) => {
+                            if (!sh.passport_scan) return;
+
+                            // Find the shareholder ID from the response
+                            // We assume the order is preserved or we match by email
+                            const savedShareholder = response.shareholders.find(
+                                s => s.email === sh.email
+                            );
+
+                            if (savedShareholder) {
+                                await uploadPassport(
+                                    formData.application_id!,
+                                    savedShareholder.id,
+                                    sh.passport_scan
+                                );
+                            }
+                        });
+
+                        await Promise.all(uploadPromises);
+                    }
+
                     // Clear error on success
                     setSaveError(null);
                 } catch (error) {
-                    // Error is already handled in mutation's onError
-                    // Don't proceed to next step
+                    console.error('Failed to save/upload:', error);
+                    // If it's an upload error (update succeeded but upload failed), set error message
+                    // If it's an update error, mutation.onError already set it, but we can ensure it's set
+                    setSaveError(prev => prev || 'Failed to save changes or upload files. Please try again.');
                     return;
                 }
             }
@@ -220,7 +247,8 @@ export const HomeScreen = () => {
                     sh.roles && 
                     sh.residential_address &&
                     sh.is_uae_resident !== undefined &&
-                    sh.is_pep !== undefined
+                    sh.is_pep !== undefined &&
+                    sh.passport_scan // Require passport scan
                 );
             default:
                 return true;

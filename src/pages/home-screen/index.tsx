@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { AnimatePresence, motion } from 'motion/react';
 import { AIChat } from './components/AIChat';
 import { FormContainer } from './components/FormContainer';
 import type { ChatMessage, FormData, FormStep } from './components/types';
@@ -239,28 +240,39 @@ export const HomeScreen = () => {
     return (
         <div className="flex h-dvh flex-row bg-primary">
             {/* Main Form Area */}
-            {isFormVisible &&(
-                <div
-                    className={`flex-1 transition-all duration-500 ease-in-out `}
-                >
-                    <FormContainer
-                        currentStep={currentStep}
-                        formData={formData}
-                        onFormDataChange={setFormData}
-                        onNext={handleNext}
-                        onPrevious={handlePrevious}
-                        canGoNext={canGoNext()}
-                        canGoPrevious={canGoPrevious()}
-                        isLastStep={isLastStep()}
-                        isLoading={isLoading}
-                        error={saveError}
-                        onDismissError={() => setSaveError(null)}
-                    />
-                </div>
-            )}
+            <AnimatePresence mode="popLayout">
+                {isFormVisible && (
+                    <motion.div
+                        layout
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.5, ease: 'easeInOut' }}
+                        className="flex-1"
+                    >
+                        <FormContainer
+                            currentStep={currentStep}
+                            formData={formData}
+                            onFormDataChange={setFormData}
+                            onNext={handleNext}
+                            onPrevious={handlePrevious}
+                            canGoNext={canGoNext()}
+                            canGoPrevious={canGoPrevious()}
+                            isLastStep={isLastStep()}
+                            isLoading={isLoading}
+                            error={saveError}
+                            onDismissError={() => setSaveError(null)}
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* AI Chat Sidebar */}
-            <div className={`border-l border-border-primary ${isFormVisible ? '' : 'flex-1'}`}>
+            <motion.div 
+                layout
+                transition={{ duration: 0.5, ease: 'easeInOut' }}
+                className={`border-l border-border-primary ${isFormVisible ? '' : 'flex-1'}`}
+            >
                 <AIChat
                     messages={chatMessages}
                     inputValue={chatInput}
@@ -270,7 +282,7 @@ export const HomeScreen = () => {
                     onStart={handleStart}
                     showStartButton={!isFormVisible}
                 />
-            </div>
+            </motion.div>
         </div>
     );
 };

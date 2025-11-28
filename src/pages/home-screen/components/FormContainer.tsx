@@ -20,6 +20,8 @@ interface FormContainerProps {
     canGoPrevious: boolean;
     isLastStep: boolean;
     isLoading?: boolean;
+    error?: string | null;
+    onDismissError?: () => void;
 }
 
 const STEPS: { id: FormStep; title: string; number: number }[] = [
@@ -43,6 +45,8 @@ export const FormContainer = ({
     canGoPrevious,
     isLastStep,
     isLoading = false,
+    error = null,
+    onDismissError,
 }: FormContainerProps) => {
     const currentStepIndex = STEPS.findIndex(s => s.id === currentStep);
     const currentStepInfo = STEPS[currentStepIndex];
@@ -150,6 +154,29 @@ export const FormContainer = ({
             {isLoading && (
                 <div className="absolute inset-0 bg-primary/50 backdrop-blur-sm z-50 flex items-center justify-center">
                     <div className="text-primary font-medium">Saving...</div>
+                </div>
+            )}
+            
+            {/* Error Banner */}
+            {error && (
+                <div className="absolute top-0 left-0 right-0 z-40 bg-error-primary text-white px-6 py-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="font-medium">{error}</span>
+                    </div>
+                    {onDismissError && (
+                        <button
+                            onClick={onDismissError}
+                            className="text-white hover:text-white/80 transition-colors"
+                            aria-label="Dismiss error"
+                        >
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    )}
                 </div>
             )}
             {/* Progress Indicator */}

@@ -46,6 +46,7 @@ export const HomeScreen = () => {
         total_shares: 0,
         shareholders: [],
     });
+    const [saveError, setSaveError] = useState<string | null>(null);
 
     // Mutation for creating license application
     const createApplicationMutation = useMutation({
@@ -56,10 +57,11 @@ export const HomeScreen = () => {
                 application_id: data.id,
                 session_id: data.session_id,
             }));
+            setSaveError(null);
         },
-        onError: (error) => {
+        onError: (error: Error) => {
             console.error('Failed to create license application:', error);
-            // TODO: Show error to user
+            setSaveError('Failed to create application. Please try again.');
         },
     });
 
@@ -67,9 +69,12 @@ export const HomeScreen = () => {
     const updateApplicationMutation = useMutation({
         mutationFn: ({ applicationId, data }: { applicationId: string; data: LicenseApplicationInput }) =>
             updateLicenseApplication(applicationId, data),
-        onError: (error) => {
+        onSuccess: () => {
+            setSaveError(null);
+        },
+        onError: (error: Error) => {
             console.error('Failed to update license application:', error);
-            // TODO: Show error to user
+            setSaveError('Failed to save your changes. Please try again.');
         },
     });
 
@@ -118,7 +123,7 @@ export const HomeScreen = () => {
     };
 
     // Form navigation handlers
-    const handleNext = () => {
+    const handleNext = async () => {
         const currentIndex = STEP_ORDER.indexOf(currentStep);
         
         // Save current step data to backend before moving to next step
@@ -158,10 +163,19 @@ export const HomeScreen = () => {
             
             // Update if there's data to save
             if (Object.keys(updateData).length > 0) {
-                updateApplicationMutation.mutate({
-                    applicationId: formData.application_id,
-                    data: updateData,
-                });
+                try {
+                    // Wait for the mutation to complete
+                    await updateApplicationMutation.mutateAsync({
+                        applicationId: formData.application_id,
+                        data: updateData,
+                    });
+                    // Clear error on success
+                    setSaveError(null);
+                } catch (error) {
+                    // Error is already handled in mutation's onError
+                    // Don't proceed to next step
+                    return;
+                }
             }
         }
         
@@ -239,6 +253,8 @@ export const HomeScreen = () => {
                         canGoPrevious={canGoPrevious()}
                         isLastStep={isLastStep()}
                         isLoading={isLoading}
+                        error={saveError}
+                        onDismissError={() => setSaveError(null)}
                     />
                 </div>
             )}

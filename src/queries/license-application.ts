@@ -86,6 +86,15 @@ export interface PassportUploadResponse {
   file_size: number;
 }
 
+export interface ExtractPassportResponse {
+  passport_number?: string;
+  full_name?: string;
+  date_of_birth?: string;
+  nationality?: string;
+  issue_date?: string;
+  expiry_date?: string;
+}
+
 export interface SubmitResponse {
   success: boolean;
   ifza_draft_id?: string | null;
@@ -211,6 +220,54 @@ export const uploadPassport = async (
     throw new Error(`Failed to upload passport: ${response.statusText}`);
   }
   
+  return response.json();
+};
+
+// Mutation function: Extract Passport Data (OCR)
+export const extractPassportData = async (
+  applicationId: string,
+  shareholderId: string
+): Promise<ExtractPassportResponse> => {
+  const url = `${BASE_URL}/api/v1/license-application/${applicationId}/shareholders/${shareholderId}/passport/extract`;
+
+  const response = await fetch(url, {
+    method: "POST",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to extract passport data: ${response.statusText}`);
+  }
+  const json = await response.json();
+  if (json && typeof json === "object" && "success" in json) {
+    if (!json.success) {
+      const errs = Array.isArray(json.errors) ? json.errors.join(" | ") : "Unknown extraction error";
+      throw new Error(errs);
+    }
+    return (json.data || {}) as ExtractPassportResponse;
+  }
+  return json as ExtractPassportResponse;
+};
+
+// Mutation function: Update Shareholder Passport Details (PATCH)
+export const updateShareholderPassport = async (
+  applicationId: string,
+  shareholderId: string,
+  data: ExtractPassportResponse
+): Promise<ShareholderResponse> => {
+  const url = `${BASE_URL}/api/v1/license-application/${applicationId}/shareholders/${shareholderId}/passport`;
+
+  const response = await fetch(url, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to update passport details: ${response.statusText}`);
+  }
+
   return response.json();
 };
 

@@ -8,6 +8,7 @@ import {
     createLicenseApplication, 
     updateLicenseApplication,
     uploadPassport,
+    updateShareholderPassport,
     type LicenseApplicationInput 
 } from '@/queries';
 
@@ -18,6 +19,7 @@ const STEP_ORDER: FormStep[] = [
     'visa-packages',
     'shareholders-info',
     'shareholder-details',
+    'passport-review',
     'payment',
     'kyc',
 ];
@@ -174,22 +176,23 @@ export const HomeScreen = () => {
 
                     // If we are on shareholder details step, handle passport uploads
                     if (currentStep === 'shareholder-details' && formData.shareholders) {
-                        const uploadPromises = formData.shareholders.map(async (sh) => {
-                            if (!sh.passport_scan) return;
-
-                            // Find the shareholder ID from the response
-                            // We assume the order is preserved or we match by email
+                        // Persist backend ids into local shareholders for later steps
+                        const withIds = (formData.shareholders || []).map((sh) => {
                             const savedShareholder = response.shareholders.find(
                                 s => s.email === sh.email
                             );
+                            return { ...sh, backend_id: savedShareholder?.id };
+                        });
+                        setFormData(prev => ({ ...prev, shareholders: withIds }));
 
-                            if (savedShareholder) {
-                                await uploadPassport(
-                                    formData.application_id!,
-                                    savedShareholder.id,
-                                    sh.passport_scan
-                                );
-                            }
+                        const uploadPromises = withIds.map(async (sh) => {
+                            if (!sh.passport_scan || !sh.backend_id) return;
+
+                            await uploadPassport(
+                                formData.application_id!,
+                                sh.backend_id,
+                                sh.passport_scan
+                            );
                         });
 
                         await Promise.all(uploadPromises);
@@ -207,6 +210,37 @@ export const HomeScreen = () => {
             }
         }
         
+        // After shareholder-details proceed to passport-review
+        if (currentStep === 'shareholder-details') {
+            setCurrentStep('passport-review');
+            return;
+        }
+
+        // On passport-review, PATCH confirmed passport details then continue
+        if (currentStep === 'passport-review') {
+            try {
+                const shareholders = formData.shareholders || [];
+                const confirmPromises = shareholders.map(async (sh) => {
+                    if (!sh.is_passport_confirmed || !sh.backend_id) return;
+                    const payload = {
+                        passport_number: sh.extracted_passport?.passport_number,
+                        full_name: sh.extracted_passport?.full_name,
+                        date_of_birth: sh.extracted_passport?.date_of_birth,
+                        nationality: sh.extracted_passport?.nationality,
+                        issue_date: sh.extracted_passport?.issue_date,
+                        expiry_date: sh.extracted_passport?.expiry_date,
+                    };
+                    await updateShareholderPassport(formData.application_id!, sh.backend_id, payload);
+                });
+                await Promise.all(confirmPromises);
+                setSaveError(null);
+            } catch (error) {
+                console.error('Failed to update passport details:', error);
+                setSaveError('Failed to save passport details. Please try again.');
+                return;
+            }
+        }
+
         if (currentIndex < STEP_ORDER.length - 1) {
             setCurrentStep(STEP_ORDER[currentIndex + 1]);
         } else {
@@ -250,6 +284,9 @@ export const HomeScreen = () => {
                     sh.is_pep !== undefined &&
                     sh.passport_scan // Require passport scan
                 );
+            case 'passport-review':
+                // All shareholders must have confirmed passport data
+                return (formData.shareholders || []).every(sh => sh.is_passport_confirmed);
             default:
                 return true;
         }

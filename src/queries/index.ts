@@ -19,6 +19,8 @@ export {
   updateLicenseApplication,
   deleteLicenseApplication,
   uploadPassport,
+  extractPassportData,
+  updateShareholderPassport,
   submitToIfza,
   type LicenseApplicationStatus,
   type ShareholderRole,
@@ -30,6 +32,7 @@ export {
   type LicenseApplicationResponse,
   type PassportUrlResponse,
   type PassportUploadResponse,
+  type ExtractPassportResponse,
   type SubmitResponse,
 } from "./license-application";
 

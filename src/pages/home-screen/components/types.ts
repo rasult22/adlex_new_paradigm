@@ -15,6 +15,18 @@ export interface BusinessActivitySelection extends BusinessActivityInput {
 export interface ShareholderData extends Omit<ShareholderInput, 'roles'> {
     passport_scan?: File;
     roles: ShareholderRole[];
+    backend_id?: string;
+    extracted_passport?: PassportData;
+    is_passport_confirmed?: boolean;
+}
+
+export interface PassportData {
+    passport_number?: string;
+    full_name?: string;
+    date_of_birth?: string; // ISO date string
+    nationality?: string;
+    issue_date?: string; // ISO date string
+    expiry_date?: string; // ISO date string
 }
 
 export interface FormData {
@@ -67,5 +79,6 @@ export type FormStep =
     | 'visa-packages'
     | 'shareholders-info'
     | 'shareholder-details'
+    | 'passport-review'
     | 'payment'
     | 'kyc';

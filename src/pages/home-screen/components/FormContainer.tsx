@@ -10,6 +10,7 @@ import { StepShareholdersInfo } from './steps/StepShareholdersInfo';
 import { StepShareholderDetails } from './steps/StepShareholderDetails';
 import { StepPayment } from './steps/StepPayment';
 import { StepKYC } from './steps/StepKYC';
+import { StepPassportReview } from './steps/StepPassportReview';
 
 interface FormContainerProps {
     currentStep: FormStep;
@@ -32,8 +33,9 @@ const STEPS: { id: FormStep; title: string; number: number }[] = [
     { id: 'visa-packages', title: 'Visas', number: 4 },
     { id: 'shareholders-info', title: 'Shareholders', number: 5 },
     { id: 'shareholder-details', title: 'Details', number: 6 },
-    { id: 'payment', title: 'Payment', number: 7 },
-    { id: 'kyc', title: 'KYC', number: 8 },
+    { id: 'passport-review', title: 'Passport Review', number: 7 },
+    { id: 'payment', title: 'Payment', number: 8 },
+    { id: 'kyc', title: 'KYC', number: 9 },
 ];
 
 export const FormContainer = ({
@@ -130,6 +132,19 @@ export const FormContainer = ({
                     <StepShareholderDetails
                         shareholders={formData.shareholders || []}
                         totalShares={formData.total_shares || 0}
+                        onShareholderChange={(index, data) => {
+                            const shareholders = [...(formData.shareholders || [])];
+                            shareholders[index] = { ...shareholders[index], ...data };
+                            onFormDataChange({ ...formData, shareholders });
+                        }}
+                    />
+                );
+            
+            case 'passport-review':
+                return (
+                    <StepPassportReview
+                        shareholders={formData.shareholders || []}
+                        applicationId={formData.application_id || ''}
                         onShareholderChange={(index, data) => {
                             const shareholders = [...(formData.shareholders || [])];
                             shareholders[index] = { ...shareholders[index], ...data };

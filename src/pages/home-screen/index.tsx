@@ -224,7 +224,14 @@ export const HomeScreen = () => {
                     if (!sh.is_passport_confirmed || !sh.backend_id) return;
                     const payload = {
                         passport_number: sh.extracted_passport?.passport_number,
-                        full_name: sh.extracted_passport?.full_name,
+                        full_name: sh.extracted_passport?.full_name || [
+                            sh.extracted_passport?.first_name,
+                            sh.extracted_passport?.middle_name,
+                            sh.extracted_passport?.last_name,
+                        ].filter(Boolean).join(' ').trim() || undefined,
+                        first_name: sh.extracted_passport?.first_name,
+                        middle_name: sh.extracted_passport?.middle_name,
+                        last_name: sh.extracted_passport?.last_name,
                         date_of_birth: sh.extracted_passport?.date_of_birth,
                         nationality: sh.extracted_passport?.nationality,
                         issue_date: sh.extracted_passport?.issue_date,

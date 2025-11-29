@@ -23,6 +23,9 @@ export interface ShareholderData extends Omit<ShareholderInput, 'roles'> {
 export interface PassportData {
     passport_number?: string;
     full_name?: string;
+    first_name?: string;
+    middle_name?: string;
+    last_name?: string;
     date_of_birth?: string; // ISO date string
     nationality?: string;
     issue_date?: string; // ISO date string

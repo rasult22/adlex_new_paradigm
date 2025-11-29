@@ -89,6 +89,9 @@ export interface PassportUploadResponse {
 export interface ExtractPassportResponse {
   passport_number?: string;
   full_name?: string;
+  first_name?: string;
+  middle_name?: string;
+  last_name?: string;
   date_of_birth?: string;
   nationality?: string;
   issue_date?: string;
@@ -254,7 +257,7 @@ export const updateShareholderPassport = async (
   shareholderId: string,
   data: ExtractPassportResponse
 ): Promise<ShareholderResponse> => {
-  const url = `${BASE_URL}/api/v1/license-application/${applicationId}/shareholders/${shareholderId}/passport`;
+  const url = `${BASE_URL}/api/v1/license-application/${applicationId}/shareholders/${shareholderId}/passport-data`;
 
   const response = await fetch(url, {
     method: "PATCH",

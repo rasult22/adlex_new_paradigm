@@ -45,7 +45,9 @@ const PassportCard = ({ sh, index, applicationId, onShareholderChange }: { sh: S
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input label='Passport Number' value={data.passport_number || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, passport_number: val } })} size="md" />
-        <Input label='Full Name' value={data.full_name || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, full_name: val } })} size="md" />
+        <Input label='First Name' value={data.first_name || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, first_name: val } })} size="md" />
+        <Input label='Middle Name' value={data.middle_name || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, middle_name: val } })} size="md" />
+        <Input label='Last Name' value={data.last_name || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, last_name: val } })} size="md" />
         <Input label='Date of Birth' value={data.date_of_birth || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, date_of_birth: val } })} size="md" />
         <Input label='Nationality' value={data.nationality || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, nationality: val } })} size="md" />
         <Input label='Issue Date' value={data.issue_date || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, issue_date: val } })} size="md" />

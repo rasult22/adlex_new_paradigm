@@ -308,7 +308,7 @@ export const HomeScreen = () => {
             <motion.div 
                 layout
                 transition={{ duration: 0.5, ease: 'easeInOut' }}
-                className={`border-l border-border-primary ${isFormVisible ? '' : 'flex-1'}`}
+                className={`border-l border-border-primary w-[30%] ${isFormVisible ? '' : 'flex-1'}`}
             >
                 <AIChat
                     onStart={handleStart}

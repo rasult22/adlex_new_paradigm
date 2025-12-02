@@ -14,7 +14,8 @@ createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <ThemeProvider>
             <QueryClientProvider client={queryClient}>
-                <CopilotKit 
+                <CopilotKit
+                    showDevConsole={true}
                     publicApiKey="ck_pub_017bce038f7afc92dd4b8818e4b7ab5d"
                     agent="adlex"
                     // runtimeUrl="https://agent.adlex.azamat.ai/api/v1/agent"

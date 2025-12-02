@@ -31,10 +31,10 @@ jobs:
           npm run build
 
       - name: Create ZIP
-        run: zip -r ${{ env.DEPLOY_PACKAGE_NAME }} ./build -x *.git*
+        run: zip -r ${{ env.DEPLOY_PACKAGE_NAME }} ./dist -x *.git*
 
       - name: Deploy static site to S3 bucket
-        run: aws s3 sync build/ s3://adlex-ai --delete
+        run: aws s3 sync dist/ s3://adlex-ai --delete
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2

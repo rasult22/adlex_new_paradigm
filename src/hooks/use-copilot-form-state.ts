@@ -69,6 +69,7 @@ export const useCopilotFormState = (
  */
 function getCompletedSteps(formData: Partial<FormData>, currentStep: FormStep): string[] {
     const completed: string[] = [];
+    console.log(currentStep)
     
     if (formData.contact_email) completed.push('contact-email');
     if ((formData.business_activities?.length || 0) >= 1) completed.push('business-activities');

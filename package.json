@@ -9,6 +9,8 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@copilotkit/react-core": "^1.10.6",
+        "@copilotkit/react-ui": "^1.10.6",
         "@tailwindcss/typography": "^0.5.16",
         "@tailwindcss/vite": "^4.1.11",
         "@tanstack/react-query": "^5.90.11",

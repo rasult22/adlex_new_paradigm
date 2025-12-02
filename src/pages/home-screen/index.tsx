@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'motion/react';
 import { AIChat } from './components/AIChat';
 import { FormContainer } from './components/FormContainer';
-import type { ChatMessage, FormData, FormStep } from './components/types';
+import type { FormData, FormStep } from './components/types';
 import { 
     createLicenseApplication, 
     updateLicenseApplication,
@@ -11,6 +11,7 @@ import {
     updateShareholderPassport,
     type LicenseApplicationInput 
 } from '@/queries';
+import { useCopilotFormState } from '@/hooks/use-copilot-form-state';
 
 const STEP_ORDER: FormStep[] = [
     'contact-email',
@@ -33,10 +34,6 @@ export const HomeScreen = () => {
     // Layout state
     const [isFormVisible, setIsFormVisible] = useState(false);
 
-    // Chat state
-    const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-    const [chatInput, setChatInput] = useState('');
-
     // Form state
     const [currentStep, setCurrentStep] = useState<FormStep>('contact-email');
     const [formData, setFormData] = useState<Partial<FormData>>({
@@ -51,6 +48,9 @@ export const HomeScreen = () => {
         shareholders: [],
     });
     const [saveError, setSaveError] = useState<string | null>(null);
+
+    // Sync form state with CopilotKit
+    useCopilotFormState(formData, currentStep);
 
     // Mutation for creating license application
     const createApplicationMutation = useMutation({
@@ -89,41 +89,6 @@ export const HomeScreen = () => {
         // Generate session ID and create license application
         const sessionId = generateSessionId();
         createApplicationMutation.mutate(sessionId);
-        
-        // Add welcome message from AI
-        const welcomeMessage: ChatMessage = {
-            id: Date.now().toString(),
-            role: 'assistant',
-            content: "Great! Let's start with your contact information. I'm here to help if you have any questions.",
-            timestamp: new Date(),
-        };
-        setChatMessages([welcomeMessage]);
-    };
-
-    const handleSendMessage = () => {
-        if (!chatInput.trim()) return;
-
-        const userMessage: ChatMessage = {
-            id: Date.now().toString(),
-            role: 'user',
-            content: chatInput,
-            timestamp: new Date(),
-        };
-
-        setChatMessages(prev => [...prev, userMessage]);
-        setChatInput('');
-
-        // TODO: Send to AI backend and receive response
-        // For now, just add a placeholder response
-        setTimeout(() => {
-            const aiResponse: ChatMessage = {
-                id: (Date.now() + 1).toString(),
-                role: 'assistant',
-                content: 'I received your message. This is where the AI response will appear.',
-                timestamp: new Date(),
-            };
-            setChatMessages(prev => [...prev, aiResponse]);
-        }, 500);
     };
 
     // Form navigation handlers
@@ -346,11 +311,6 @@ export const HomeScreen = () => {
                 className={`border-l border-border-primary ${isFormVisible ? '' : 'flex-1'}`}
             >
                 <AIChat
-                    messages={chatMessages}
-                    inputValue={chatInput}
-                    isFullscreen={!isFormVisible}
-                    onInputChange={setChatInput}
-                    onSendMessage={handleSendMessage}
                     onStart={handleStart}
                     showStartButton={!isFormVisible}
                 />

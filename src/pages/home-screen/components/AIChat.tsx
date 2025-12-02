@@ -1,10 +1,11 @@
 import '@copilotkit/react-ui/styles.css';
+import { useFrontendTool } from "@copilotkit/react-core";
+
 import { Button } from '@/components/base/buttons/button';
 import { useCopilotChatHeadless_c } from '@copilotkit/react-core';
 import { useState, useRef, useEffect } from 'react';
 import { Send01, RefreshCw01, XClose, User01, Zap } from '@untitledui/icons';
 import type { Message as CopilotMessage } from '@copilotkit/shared';
-
 interface AIChatProps {
     onStart: () => void;
     showStartButton?: boolean;
@@ -63,13 +64,14 @@ const MessageBubble = ({ message }: { message: CopilotMessage }) => {
     }
 
     if (isTool) {
+        console.log(message)
         return (
             <div id="tool" className="flex justify-start mb-4">
                 <div className="flex items-start gap-2 max-w-[80%]">
                     <div className="bg-tertiary text-secondary rounded-lg px-4 py-3 shadow-xs ring-1 ring-secondary">
                         <div className="flex items-center gap-2 mb-2">
                             <span className="inline-flex items-center rounded-md bg-utility-blue-50 px-2 py-1 text-xs font-medium text-utility-blue-700 ring-1 ring-inset ring-utility-blue-600/20">
-                                Tool
+                                Tool - {message.toolName}
                             </span>
                         </div>
                         <p className="text-sm leading-5">{content}</p>
@@ -128,6 +130,21 @@ export const AIChat = ({
     const [showSystemMessages, setShowSystemMessages] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    useFrontendTool({
+        name: "sayHello",
+        description: "Say hello to someone.",
+        parameters: [
+            {
+            name: "name",
+            type: "string",
+            description: "name of the person to greet",
+            required: true,
+            },
+        ],
+        handler: async ({ name }) => {
+            alert(`Hello, ${name}!`);
+        },
+    });
 
     // Автоматический скролл к последнему сообщению
     useEffect(() => {

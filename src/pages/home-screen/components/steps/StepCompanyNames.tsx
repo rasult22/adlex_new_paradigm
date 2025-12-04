@@ -1,4 +1,5 @@
 import { Input } from '@/components/base/input/input';
+import { useFrontendTool } from '@copilotkit/react-core';
 
 interface StepCompanyNamesProps {
     names: [string, string, string];
@@ -7,6 +8,78 @@ interface StepCompanyNamesProps {
 }
 
 export const StepCompanyNames = ({ names, onChange, errors = [] }: StepCompanyNamesProps) => {
+
+    // After with useFrontendTool
+    useFrontendTool({
+        name: "suggestCompanyNames",
+        parameters: [
+            {
+                name: "name1",
+                type: "string",
+                description: "Suggest company name 1",
+                required: true,
+            },
+            {
+                name: "name2",
+                type: "string",
+                description: "Suggest company name 2",
+                required: true,
+            },
+            {
+                name: "name3",
+                type: "string",
+                description: "Suggest company name 3",
+                required: true,
+            },
+        ],
+        handler: ({ name1, name2, name3 }) => {
+            return {
+                name1,
+                name2,
+                name3,
+            }
+        },
+        render: ({ args, status, result }) => {
+            if (status === "inProgress") {
+                return (
+                    <div className="flex items-center gap-2 text-sm text-tertiary py-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent"></div>
+                        <span>Generating name suggestions...</span>
+                    </div>
+                );
+            }
+            if (status === "complete" && result) {
+                const suggestions = [
+                    { name: args.name1, index: 0 as const },
+                    { name: args.name2, index: 1 as const },
+                    { name: args.name3, index: 2 as const },
+                ];
+
+                return (
+                    <div className="space-y-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div className="text-sm font-medium text-gray-700 mb-2">
+                            💡 AI Suggestions - Click to apply
+                        </div>
+                        {suggestions.map(({ name, index }) => (
+                            <div
+                                key={index}
+                                className="flex items-center justify-between p-3 bg-white rounded-md border border-gray-200 hover:border-primary transition-colors"
+                            >
+                                <div className="text-base font-medium text-gray-900">{name}</div>
+                                <button
+                                    onClick={() => onChange(index, name)}
+                                    className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors text-sm font-medium"
+                                >
+                                    Apply
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                );
+            }
+            return null;
+        },
+    });
     return (
         <div className="space-y-6">
             <div>
@@ -20,7 +93,9 @@ export const StepCompanyNames = ({ names, onChange, errors = [] }: StepCompanyNa
                 <Input
                     label="First Choice"
                     value={names[0]}
-                    onChange={(value) => onChange(0, value)}
+                    onChange={(value) => {
+                        onChange(0, value);
+                    }}
                     placeholder="Enter your first company name choice"
                     isRequired
                     isInvalid={!!errors[0]}

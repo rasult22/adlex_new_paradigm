@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'motion/react';
 import { AIChat } from './components/AIChat';
@@ -12,6 +12,8 @@ import {
     type LicenseApplicationInput 
 } from '@/queries';
 import { useCopilotFormState } from '@/hooks/use-copilot-form-state';
+import { useCopilotAction, useCopilotChatHeadless_c } from '@copilotkit/react-core';
+import { Badge } from '@/components/base/badges/badges';
 
 const STEP_ORDER: FormStep[] = [
     'contact-email',
@@ -48,6 +50,36 @@ export const HomeScreen = () => {
         shareholders: [],
     });
     const [saveError, setSaveError] = useState<string | null>(null);
+    const {sendMessage} = useCopilotChatHeadless_c()
+    // Action для отображения переходов между этапами
+    useCopilotAction({
+        name: "show_step_transition",
+        description: "Display step transition badge with step name",
+
+        parameters: [
+        { name: "stepKey", type: "string" },
+        { name: "stepName", type: "string" }
+        ],
+        // Generative UI - рендерится в чате!
+        render: ({ args }) => (
+        <div id={args.stepKey} className="flex w-full justify-center">
+            <Badge color="brand">
+                <h3>{args.stepName}</h3>
+            </Badge>
+        </div>
+        ),
+        // Handler просто возвращает подтверждение
+        handler: async ({ stepName }) => {
+        return `Displayed transition to step ${stepName}`;
+        }
+    });
+    useEffect(() => {
+        sendMessage({
+            id: `${new Date().getTime()}`,
+            content: 'run show_step_transition copilot action',
+            role: 'system',
+        })
+    }, [currentStep])
 
     // Sync form state with CopilotKit
     useCopilotFormState(formData, currentStep);

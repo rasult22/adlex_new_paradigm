@@ -34,7 +34,6 @@ export const AIChat = ({
                 clickOutsideToClose={false}
                 labels={{
                     title: "Adlex AI",
-                    initial: "👋 Welcome! I'm here to help you with your UAE company application. Feel free to ask me anything!",
                 }}
             />
         </div>

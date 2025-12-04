@@ -1,5 +1,5 @@
 import { Input } from '@/components/base/input/input';
-import { useFrontendTool } from '@copilotkit/react-core';
+import { useCopilotAction } from '@copilotkit/react-core';
 
 interface StepCompanyNamesProps {
     names: [string, string, string];
@@ -9,9 +9,8 @@ interface StepCompanyNamesProps {
 
 export const StepCompanyNames = ({ names, onChange, errors = [] }: StepCompanyNamesProps) => {
 
-    // After with useFrontendTool
-    useFrontendTool({
-        name: "suggestCompanyNames",
+    useCopilotAction({
+        name: 'suggestCompanyNames',
         parameters: [
             {
                 name: "name1",
@@ -39,7 +38,7 @@ export const StepCompanyNames = ({ names, onChange, errors = [] }: StepCompanyNa
                 name3,
             }
         },
-        render: ({ args, status, result }) => {
+        render: ({ args, status }) => {
             if (status === "inProgress") {
                 return (
                     <div className="flex items-center gap-2 text-sm text-tertiary py-2">
@@ -48,13 +47,13 @@ export const StepCompanyNames = ({ names, onChange, errors = [] }: StepCompanyNa
                     </div>
                 );
             }
-            if (status === "complete" && result) {
+            if (status === "complete") {
                 const suggestions = [
                     { name: args.name1, index: 0 as const },
                     { name: args.name2, index: 1 as const },
                     { name: args.name3, index: 2 as const },
                 ];
-
+    
                 return (
                     <div className="space-y-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
                         <div className="text-sm font-medium text-gray-700 mb-2">
@@ -77,9 +76,10 @@ export const StepCompanyNames = ({ names, onChange, errors = [] }: StepCompanyNa
                     </div>
                 );
             }
-            return null;
+            return '';
         },
-    });
+
+    })
     return (
         <div className="space-y-6">
             <div>

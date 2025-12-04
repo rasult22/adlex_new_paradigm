@@ -13,7 +13,8 @@ import {
 } from '@/queries';
 import { useCopilotFormState } from '@/hooks/use-copilot-form-state';
 import { useCopilotAction, useCopilotChatHeadless_c } from '@copilotkit/react-core';
-import { Badge } from '@/components/base/badges/badges';
+import { BadgeWithIcon } from '@/components/base/badges/badges';
+import { Dotpoints02 } from '@untitledui/icons';
 
 const STEP_ORDER: FormStep[] = [
     'contact-email',
@@ -127,14 +128,15 @@ export const HomeScreen = () => {
         { name: "currentStepKey", type: "string" },
         { name: "currentStepName", type: "string" }
         ],
-        available: 'enabled',
+        handler: (args) => {
+            return `${JSON.stringify(args)}`
+        },
         render: ({ args }) => {
-            console.log('IT IS RENDREDING ME')    
             return (
             <div id={args.currentStepKey} className="flex w-full justify-center">
-                <Badge color="brand">
+                <BadgeWithIcon iconLeading={Dotpoints02} color="brand">
                     <h3>{args.currentStepName}</h3>
-                </Badge>
+                </BadgeWithIcon>
             </div>
             )
         }
@@ -145,7 +147,7 @@ export const HomeScreen = () => {
 
         sendMessage({
             id: `${new Date().getTime()}`,
-            content: `RUN FRONTEND ACTION: show_step_transition with CURRENT STEP: ${currentStep}`,
+            content: `Покажи show_step_transition`,
             role: 'developer',
         })
     }, [currentStep, isFormVisible])

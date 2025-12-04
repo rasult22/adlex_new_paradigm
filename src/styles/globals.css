@@ -38,6 +38,20 @@ body {
     -webkit-font-kerning: normal;
     font-kerning: normal;
 }
+/* .copilotKitHeader, .copilotKitMessages, .copilotKitInputContainer, .copilotKitInput, .copilotKitInputControlButton {
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+}
+.copilotKitHeader {
+    border-bottom: 1px solid var(--color-border-primary);
+}
+.copilotKitInput  {
+    border: 1px solid var(--color-border-primary);
+}
+.copilotKitInput textarea {
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+} */
 
 /* Hide the default expand arrow on Safari.  */
 details summary::-webkit-details-marker {

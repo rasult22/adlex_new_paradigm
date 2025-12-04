@@ -122,26 +122,21 @@ export const HomeScreen = () => {
     // Action для отображения переходов между этапами
     useCopilotAction({
         name: "show_step_transition",
-        description: "Display currentStep transition badge with currentStep name. currentStep is the current step in the form.",
+        description: "Display currentStep transition badge with currentStep name. example: currentStepKey: contact-email, currentStepName: Contact Email",
         parameters: [
-        { name: "stepKey", type: "string" },
-        { name: "stepName", type: "string" }
+        { name: "currentStepKey", type: "string" },
+        { name: "currentStepName", type: "string" }
         ],
-        // Generative UI - рендерится в чате!
+        available: 'enabled',
         render: ({ args }) => {
-        console.log('IT IS RENDREDING ME')    
-        return (
-        <div id={args.stepKey} className="flex w-full justify-center">
-            <Badge color="brand">
-                <h3>{args.stepName}</h3>
-            </Badge>
-        </div>
-        )
-        },
-        // Handler просто возвращает подтверждение
-        handler: async ({ stepName }) => {
-            console.log(`Displayed transition to step ${stepName}`)
-            return `Displayed transition to step ${stepName}`;
+            console.log('IT IS RENDREDING ME')    
+            return (
+            <div id={args.currentStepKey} className="flex w-full justify-center">
+                <Badge color="brand">
+                    <h3>{args.currentStepName}</h3>
+                </Badge>
+            </div>
+            )
         }
     });
     useEffect(() => {
@@ -150,14 +145,10 @@ export const HomeScreen = () => {
 
         sendMessage({
             id: `${new Date().getTime()}`,
-            content: 'RUN FRONTEND ACTION: show_step_transition with CURRENT STEP',
-            role: 'system',
-        }, {
-            'followUp': false
+            content: `RUN FRONTEND ACTION: show_step_transition with CURRENT STEP: ${currentStep}`,
+            role: 'developer',
         })
     }, [currentStep, isFormVisible])
-
-
 
     // Mutation for creating license application
     const createApplicationMutation = useMutation({

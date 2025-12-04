@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'motion/react';
 import { AIChat } from './components/AIChat';
 import { FormContainer } from './components/FormContainer';
-import type { FormData, FormStep } from './components/types';
+import type { FormData, FormStep, FormHandlers, BusinessActivitySelection, ShareholderData, ShareholderRole } from './components/types';
 import { 
     createLicenseApplication, 
     updateLicenseApplication,
@@ -51,38 +51,113 @@ export const HomeScreen = () => {
     });
     const [saveError, setSaveError] = useState<string | null>(null);
     const {sendMessage} = useCopilotChatHeadless_c()
+
+    // Form handlers
+    const formHandlers: FormHandlers = {
+        onContactEmailChange: (email: string) => {
+            setFormData(prev => ({ ...prev, contact_email: email }));
+        },
+
+        onBusinessActivitiesChange: (activities: BusinessActivitySelection[]) => {
+            setFormData(prev => ({ ...prev, business_activities: activities }));
+        },
+
+        onCompanyNameChange: (index: 0 | 1 | 2, value: string) => {
+            setFormData(prev => {
+                const fieldName = `company_name_${index + 1}` as 'company_name_1' | 'company_name_2' | 'company_name_3';
+                return { ...prev, [fieldName]: value };
+            });
+        },
+
+        onVisaPackageQuantityChange: (quantity: number) => {
+            setFormData(prev => ({ ...prev, visa_package_quantity: quantity }));
+        },
+
+        onShareholdersInfoChange: (numberOfShareholders: number, totalShares: number) => {
+            setFormData(prev => {
+                // Initialize shareholders array when number changes
+                const currentShareholders = prev.shareholders || [];
+                const shareholders = Array(numberOfShareholders)
+                    .fill(null)
+                    .map((_, i) =>
+                        currentShareholders[i] || {
+                            email: '',
+                            phone: '',
+                            number_of_shares: 0,
+                            roles: ['Shareholder'] as ShareholderRole[],
+                            residential_address: '',
+                            is_uae_resident: false,
+                            is_pep: false,
+                        }
+                    );
+
+                return {
+                    ...prev,
+                    number_of_shareholders: numberOfShareholders,
+                    total_shares: totalShares,
+                    shareholders,
+                };
+            });
+        },
+
+        onShareholderDetailsChange: (index: number, data: Partial<ShareholderData>) => {
+            setFormData(prev => {
+                const shareholders = [...(prev.shareholders || [])];
+                shareholders[index] = { ...shareholders[index], ...data };
+                return { ...prev, shareholders };
+            });
+        },
+
+        onPassportReviewChange: (index: number, data: Partial<ShareholderData>) => {
+            setFormData(prev => {
+                const shareholders = [...(prev.shareholders || [])];
+                shareholders[index] = { ...shareholders[index], ...data };
+                return { ...prev, shareholders };
+            });
+        },
+    }
+    // Sync form state with CopilotKit
+    useCopilotFormState(formData, currentStep);
+
     // Action для отображения переходов между этапами
     useCopilotAction({
         name: "show_step_transition",
-        description: "Display step transition badge with step name",
-
+        description: "Display currentStep transition badge with currentStep name. currentStep is the current step in the form.",
         parameters: [
         { name: "stepKey", type: "string" },
         { name: "stepName", type: "string" }
         ],
         // Generative UI - рендерится в чате!
-        render: ({ args }) => (
+        render: ({ args }) => {
+        console.log('IT IS RENDREDING ME')    
+        return (
         <div id={args.stepKey} className="flex w-full justify-center">
             <Badge color="brand">
                 <h3>{args.stepName}</h3>
             </Badge>
         </div>
-        ),
+        )
+        },
         // Handler просто возвращает подтверждение
         handler: async ({ stepName }) => {
-        return `Displayed transition to step ${stepName}`;
+            console.log(`Displayed transition to step ${stepName}`)
+            return `Displayed transition to step ${stepName}`;
         }
     });
     useEffect(() => {
+        // Skip if form is not visible
+        if (!isFormVisible) return;
+
         sendMessage({
             id: `${new Date().getTime()}`,
-            content: 'run show_step_transition copilot action',
+            content: 'RUN FRONTEND ACTION: show_step_transition with CURRENT STEP',
             role: 'system',
+        }, {
+            'followUp': false
         })
-    }, [currentStep])
+    }, [currentStep, isFormVisible])
 
-    // Sync form state with CopilotKit
-    useCopilotFormState(formData, currentStep);
+
 
     // Mutation for creating license application
     const createApplicationMutation = useMutation({
@@ -321,8 +396,8 @@ export const HomeScreen = () => {
                     >
                         <FormContainer
                             currentStep={currentStep}
-                            formData={formData}
-                            onFormDataChange={setFormData}
+                            formData={formData as FormData}
+                            handlers={formHandlers}
                             onNext={handleNext}
                             onPrevious={handlePrevious}
                             canGoNext={canGoNext()}

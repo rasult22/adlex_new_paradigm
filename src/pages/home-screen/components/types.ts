@@ -36,33 +36,43 @@ export interface FormData {
     // Application metadata
     application_id?: string;
     session_id?: string;
-    
+
     // Step 1
     contact_email: string;
-    
+
     // Step 2
     business_activities: BusinessActivitySelection[];
-    
+
     // Step 3
     company_name_1: string;
     company_name_2: string;
     company_name_3: string;
-    
+
     // Step 4
     visa_package_quantity: number;
-    
+
     // Step 5
     number_of_shareholders: number;
     total_shares: number;
-    
+
     // Step 6
     shareholders: ShareholderData[];
-    
+
     // Step 7
     payment?: any; // TBD
-    
+
     // Step 8
     kyc?: any; // TBD
+}
+
+export interface FormHandlers {
+    onContactEmailChange: (email: string) => void;
+    onBusinessActivitiesChange: (activities: BusinessActivitySelection[]) => void;
+    onCompanyNameChange: (index: 0 | 1 | 2, value: string) => void;
+    onVisaPackageQuantityChange: (quantity: number) => void;
+    onShareholdersInfoChange: (numberOfShareholders: number, totalShares: number) => void;
+    onShareholderDetailsChange: (index: number, data: Partial<ShareholderData>) => void;
+    onPassportReviewChange: (index: number, data: Partial<ShareholderData>) => void;
 }
 
 export interface ChatMessage {

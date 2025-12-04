@@ -1,7 +1,7 @@
 import { ArrowLeft, ArrowRight, Check } from '@untitledui/icons';
 import { Button } from '@/components/base/buttons/button';
 import { AnimatePresence, motion } from 'motion/react';
-import type { FormStep } from './types';
+import type { FormStep, FormData, FormHandlers } from './types';
 import { StepContactEmail } from './steps/StepContactEmail';
 import { StepBusinessActivities } from './steps/StepBusinessActivities';
 import { StepCompanyNames } from './steps/StepCompanyNames';
@@ -14,8 +14,8 @@ import { StepPassportReview } from './steps/StepPassportReview';
 
 interface FormContainerProps {
     currentStep: FormStep;
-    formData: any;
-    onFormDataChange: (data: any) => void;
+    formData: FormData;
+    handlers: FormHandlers;
     onNext: () => void;
     onPrevious: () => void;
     canGoNext: boolean;
@@ -41,7 +41,7 @@ const STEPS: { id: FormStep; title: string; number: number }[] = [
 export const FormContainer = ({
     currentStep,
     formData,
-    onFormDataChange,
+    handlers,
     onNext,
     onPrevious,
     canGoNext,
@@ -60,20 +60,18 @@ export const FormContainer = ({
                 return (
                     <StepContactEmail
                         value={formData.contact_email || ''}
-                        onChange={(value) => onFormDataChange({ ...formData, contact_email: value })}
+                        onChange={handlers.onContactEmailChange}
                     />
                 );
-            
+
             case 'business-activities':
                 return (
                     <StepBusinessActivities
                         selectedActivities={formData.business_activities || []}
-                        onActivitiesChange={(activities) => 
-                            onFormDataChange({ ...formData, business_activities: activities })
-                        }
+                        onActivitiesChange={handlers.onBusinessActivitiesChange}
                     />
                 );
-            
+
             case 'company-names':
                 return (
                     <StepCompanyNames
@@ -82,83 +80,62 @@ export const FormContainer = ({
                             formData.company_name_2 || '',
                             formData.company_name_3 || ''
                         ]}
-                        onChange={(index, value) => {
-                            if (index === 0) onFormDataChange({ ...formData, company_name_1: value });
-                            if (index === 1) onFormDataChange({ ...formData, company_name_2: value });
-                            if (index === 2) onFormDataChange({ ...formData, company_name_3: value });
-                        }}
+                        onChange={handlers.onCompanyNameChange}
                     />
                 );
-            
+
             case 'visa-packages':
                 return (
                     <StepVisaPackages
                         value={formData.visa_package_quantity || 0}
-                        onChange={(value) => onFormDataChange({ ...formData, visa_package_quantity: value })}
+                        onChange={handlers.onVisaPackageQuantityChange}
                     />
                 );
-            
+
             case 'shareholders-info':
                 return (
                     <StepShareholdersInfo
                         numberOfShareholders={formData.number_of_shareholders || 0}
                         totalShares={formData.total_shares || 0}
-                        onNumberOfShareholdersChange={(value) => {
-                            const shareholders = Array(value).fill(null).map((_, i) => 
-                                formData.shareholders?.[i] || {
-                                    email: '',
-                                    phone: '',
-                                    number_of_shares: 0,
-                                    roles: ['Shareholder'],
-                                    residential_address: '',
-                                    is_uae_resident: false,
-                                    is_pep: false,
-                                }
+                        onNumberOfShareholdersChange={(numShareholders) => {
+                            handlers.onShareholdersInfoChange(
+                                numShareholders,
+                                formData.total_shares || 0
                             );
-                            onFormDataChange({ 
-                                ...formData, 
-                                number_of_shareholders: value,
-                                shareholders 
-                            });
                         }}
-                        onTotalSharesChange={(value) => 
-                            onFormDataChange({ ...formData, total_shares: value })
-                        }
+                        onTotalSharesChange={(totalShares) => {
+                            handlers.onShareholdersInfoChange(
+                                formData.number_of_shareholders || 0,
+                                totalShares
+                            );
+                        }}
                     />
                 );
-            
+
             case 'shareholder-details':
                 return (
                     <StepShareholderDetails
                         shareholders={formData.shareholders || []}
                         totalShares={formData.total_shares || 0}
-                        onShareholderChange={(index, data) => {
-                            const shareholders = [...(formData.shareholders || [])];
-                            shareholders[index] = { ...shareholders[index], ...data };
-                            onFormDataChange({ ...formData, shareholders });
-                        }}
+                        onShareholderChange={handlers.onShareholderDetailsChange}
                     />
                 );
-            
+
             case 'passport-review':
                 return (
                     <StepPassportReview
                         shareholders={formData.shareholders || []}
                         applicationId={formData.application_id || ''}
-                        onShareholderChange={(index, data) => {
-                            const shareholders = [...(formData.shareholders || [])];
-                            shareholders[index] = { ...shareholders[index], ...data };
-                            onFormDataChange({ ...formData, shareholders });
-                        }}
+                        onShareholderChange={handlers.onPassportReviewChange}
                     />
                 );
-            
+
             case 'payment':
                 return <StepPayment />;
-            
+
             case 'kyc':
                 return <StepKYC />;
-            
+
             default:
                 return null;
         }

@@ -9,6 +9,7 @@ import "@/styles/globals.css";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./queries/client";
 import { CopilotKit } from "@copilotkit/react-core";
+import { CreateLicenseApplicationScreen } from "./pages/create-license-application";
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
@@ -23,6 +24,7 @@ createRoot(document.getElementById("root")!).render(
                         <RouteProvider>
                             <Routes>
                                 <Route path="/" element={<HomeScreen />} />
+                                <Route path="/create-license-application" element={<CreateLicenseApplicationScreen />} />
                                 <Route path="*" element={<NotFound />} />
                             </Routes>
                         </RouteProvider>

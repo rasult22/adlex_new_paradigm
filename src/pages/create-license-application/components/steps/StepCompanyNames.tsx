@@ -1,3 +1,4 @@
+import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { useCopilotAction } from '@copilotkit/react-core';
 
@@ -64,13 +65,10 @@ export const StepCompanyNames = ({ names, onChange, errors = [] }: StepCompanyNa
                                 key={index}
                                 className="flex items-center justify-between p-3 bg-white rounded-md border border-gray-200 hover:border-primary transition-colors"
                             >
-                                <div className="text-base font-medium text-gray-900">{name}</div>
-                                <button
-                                    onClick={() => onChange(index, name)}
-                                    className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors text-sm font-medium"
-                                >
+                                <div className="text-base font-medium text-text-primary">{name}</div>
+                                <Button onClick={() => onChange(index, name)}>
                                     Apply
-                                </button>
+                                </Button>
                             </div>
                         ))}
                     </div>

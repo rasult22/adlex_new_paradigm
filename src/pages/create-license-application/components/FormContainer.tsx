@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Check } from '@untitledui/icons';
+import { ArrowLeft, ArrowRight, Check, HomeLine } from '@untitledui/icons';
 import { Button } from '@/components/base/buttons/button';
 import { AnimatePresence, motion } from 'motion/react';
 import type { FormStep, FormData, FormHandlers } from './types';
@@ -11,6 +11,7 @@ import { StepShareholderDetails } from './steps/StepShareholderDetails';
 import { StepPayment } from './steps/StepPayment';
 import { StepKYC } from './steps/StepKYC';
 import { StepPassportReview } from './steps/StepPassportReview';
+import { ButtonUtility } from '@/components/base/buttons/button-utility';
 
 interface FormContainerProps {
     currentStep: FormStep;
@@ -180,6 +181,15 @@ export const FormContainer = ({
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* Header */}
+            <div className='px-6'>
+                {/* breadcrumbs */}
+                <div>
+                    <ButtonUtility color='tertiary' icon={HomeLine} />
+                    
+                </div>
+            </div>
 
             {/* Progress Indicator */}
             <div className="border-b border-border-primary p-6">

@@ -10,6 +10,7 @@ export const AIChat = () => {
             <CopilotSidebar
                 // AssistantMessage={AssistantMessage}
                 // UserMessage={UserMessage}
+
                 defaultOpen={true}
                 icons={{
                     sendIcon: <CornerDownLeft />,

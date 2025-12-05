@@ -76,6 +76,7 @@ export const CreateLicenseApplicationScreen = () => {
   const application_id: string = searchParam.get('application_id') as string;
   const session_id: string = searchParam.get('session_id') as string;
   const [currentStep, setCurrentStep] = useState<FormStep>('contact-email');
+  const [initial, setInitial] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<FormData>>({
         application_id,
@@ -92,37 +93,37 @@ export const CreateLicenseApplicationScreen = () => {
     });
 
    
-   const {setState, state} = useCoAgent<AgentState>({
-        'name': 'adlex',
-        initialState: {
-            // Identifiers
-            application_id: application_id,
-            // Business Activities (1-3)
-            business_activities: [],
-            // Company Names (3 options required)
-            company_name_1: '',
-            company_name_2: '',
-            company_name_3: '',
-            // Visa Package
-            visa_package_quantity: 0,
-            // Shareholding Structure
-            number_of_shareholders: 0,
-            total_shares: 0,
-            // Shareholders
-            shareholders: [],
-            // Progress tracking
-            current_step: 'contact-email',
-            completion_percentage: 0,
-            // Validation
-            validation_errors: [],
-            is_ready_to_submit: false,
-        }
-    })
-    console.log(setState, state)
+//    const {setState, state} = useCoAgent<AgentState>({
+//         'name': 'adlex',
+//         initialState: {
+//             // Identifiers
+//             application_id: application_id,
+//             // Business Activities (1-3)
+//             business_activities: [],
+//             // Company Names (3 options required)
+//             company_name_1: '',
+//             company_name_2: '',
+//             company_name_3: '',
+//             // Visa Package
+//             visa_package_quantity: 0,
+//             // Shareholding Structure
+//             number_of_shareholders: 0,
+//             total_shares: 0,
+//             // Shareholders
+//             shareholders: [],
+//             // Progress tracking
+//             current_step: 'contact-email',
+//             completion_percentage: 0,
+//             // Validation
+//             validation_errors: [],
+//             is_ready_to_submit: false,
+//         }
+//     })
+//     console.log(setState, state)
 
-    useEffect(() => {
-        console.log("SHARED STATE CHANGED", state)
-    }, [state])
+//     useEffect(() => {
+//         console.log("SHARED STATE CHANGED", state)
+//     }, [state])
 
      // Action для отображения переходов между этапами
     useCopilotAction({
@@ -148,7 +149,7 @@ export const CreateLicenseApplicationScreen = () => {
     // Sync form state with CopilotKit
     useCopilotFormState(formData, currentStep);
     useEffect(() => {
-        if (!isChatLoding) {
+        if (currentStep !== 'contact-email') {
             sendMessage({
                 id: `${new Date().getTime()}`,
                 content: `Покажи show_step_transition`,

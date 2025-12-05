@@ -72,7 +72,7 @@ const STEP_ORDER: FormStep[] = [
 
 export const CreateLicenseApplicationScreen = () => {
   const [searchParam] = useSearchParams()
-  const {sendMessage} = useCopilotChatHeadless_c()
+  const {sendMessage, isLoading: isChatLoding} = useCopilotChatHeadless_c()
   const application_id: string = searchParam.get('application_id') as string;
   const session_id: string = searchParam.get('session_id') as string;
   const [currentStep, setCurrentStep] = useState<FormStep>('contact-email');
@@ -148,11 +148,13 @@ export const CreateLicenseApplicationScreen = () => {
     // Sync form state with CopilotKit
     useCopilotFormState(formData, currentStep);
     useEffect(() => {
-      sendMessage({
-          id: `${new Date().getTime()}`,
-          content: `Покажи show_step_transition`,
-          role: 'developer',
-      })
+        if (!isChatLoding) {
+            sendMessage({
+                id: `${new Date().getTime()}`,
+                content: `Покажи show_step_transition`,
+                role: 'developer',
+            })
+        }
   }, [currentStep])
 
     // Form handlers

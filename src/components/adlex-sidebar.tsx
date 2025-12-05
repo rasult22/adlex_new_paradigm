@@ -80,7 +80,6 @@ export const AdlexSidebar = ({
                 </div>
                 <div className="flex items-center gap-2 text-sm text-tertiary">
                     <IFZALogo className="h-5 w-5" />
-                    <span className="font-medium">IFZA</span>
                     <span className="text-quaternary">Official Partner</span>
                 </div>
             </div>

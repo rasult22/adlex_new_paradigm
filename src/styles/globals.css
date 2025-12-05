@@ -53,6 +53,13 @@ body {
     color: var(--color-text-primary);
 } */
 
+.copilotKitWindow {
+    box-shadow: none;
+}
+.copilotKitHeader  {
+ border-bottom: 1px solid var(--color-border-primary);
+}
+
 /* Hide the default expand arrow on Safari.  */
 details summary::-webkit-details-marker {
     display: none;

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'motion/react';
 import { AIChat } from './components/AIChat';
+import { AppLayout } from '../../components/app-layout';
 import { FormContainer } from './components/FormContainer';
 import type { FormData, FormStep, FormHandlers, BusinessActivitySelection, ShareholderData, ShareholderRole } from './components/types';
 import { 
@@ -375,46 +376,47 @@ export const HomeScreen = () => {
     const isLoading = createApplicationMutation.isPending || updateApplicationMutation.isPending;
 
     return (
-        <div className="flex h-dvh flex-row bg-primary">
-            {/* Main Form Area */}
-            <AnimatePresence mode="popLayout">
-                {isFormVisible && (
-                    <motion.div
-                        layout
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        transition={{ duration: 0.5, ease: 'easeInOut' }}
-                        className="flex-1"
-                    >
-                        <FormContainer
-                            currentStep={currentStep}
-                            formData={formData as FormData}
-                            handlers={formHandlers}
-                            onNext={handleNext}
-                            onPrevious={handlePrevious}
-                            canGoNext={canGoNext()}
-                            canGoPrevious={canGoPrevious()}
-                            isLastStep={isLastStep()}
-                            isLoading={isLoading}
-                            error={saveError}
-                            onDismissError={() => setSaveError(null)}
-                        />
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* AI Chat Sidebar */}
-            <motion.div 
-                layout
-                transition={{ duration: 0.5, ease: 'easeInOut' }}
-                className={`border-l border-border-primary ${isFormVisible ? '' : 'flex-1'}`}
-            >
-                <AIChat
-                    onStart={handleStart}
-                    showStartButton={!isFormVisible}
-                />
-            </motion.div>
-        </div>
+        <AppLayout>
+            <div className="flex h-dvh flex-row bg-primary">
+                {/* Main Form Area */}
+                <AnimatePresence mode="popLayout">
+                    {isFormVisible && (
+                        <motion.div
+                            layout
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.5, ease: 'easeInOut' }}
+                            className="flex-1"
+                        >
+                            <FormContainer
+                                currentStep={currentStep}
+                                formData={formData as FormData}
+                                handlers={formHandlers}
+                                onNext={handleNext}
+                                onPrevious={handlePrevious}
+                                canGoNext={canGoNext()}
+                                canGoPrevious={canGoPrevious()}
+                                isLastStep={isLastStep()}
+                                isLoading={isLoading}
+                                error={saveError}
+                                onDismissError={() => setSaveError(null)}
+                            />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+                {/* AI Chat Sidebar */}
+                <motion.div 
+                    layout
+                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                    className={`border-l border-border-primary ${isFormVisible ? '' : 'flex-1'}`}
+                >
+                    <AIChat
+                        onStart={handleStart}
+                        showStartButton={!isFormVisible}
+                    />
+                </motion.div>
+            </div>
+        </AppLayout>
     );
 };

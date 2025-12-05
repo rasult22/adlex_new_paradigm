@@ -1,10 +1,9 @@
 import { CopilotSidebar } from '@copilotkit/react-ui';
 import '@copilotkit/react-ui/styles.css';
 import { Button } from '@/components/base/buttons/button';
-import { AppLayout } from '@/components/app-layout';
 // import { UserMessage } from './UserMessage';
 // import { AssistantMessage } from './AssistantMessage';
-import { CornerDownLeft,  StopCircle } from '@untitledui/icons';
+import { CornerDownLeft,  Plus,  StopCircle } from '@untitledui/icons';
 
 interface AIChatProps {
     onStart: () => void;
@@ -17,40 +16,36 @@ export const AIChat = ({
 }: AIChatProps) => {
     if (showStartButton) {
         return (
-            <AppLayout>
-                <div className="flex flex-col bg-primary h-full items-center justify-center p-8">
-                    <div className="text-center space-y-4 max-w-md">
-                        <h3 className="text-xl font-semibold text-primary">Welcome to Adlex.ai</h3>
-                        <p className="text-md text-tertiary">
-                            👋 Welcome to Adlex.ai! I'll be your personal AI assistant to guide you through opening your UAE company fully online.
-                        </p>
-                        <Button size="lg" onClick={onStart}>
-                            Start Application
-                        </Button>
-                    </div>
+            <div className="flex flex-col bg-primary h-full items-center justify-center p-8">
+                <div className="text-center space-y-4 max-w-md">
+                    <h3 className="text-xl font-semibold text-primary"> Готовы открыть свою компанию в IFZA?</h3>
+                    <p className="text-md text-tertiary">
+                       Заполните заявку прямо сейчас через Adlex AI
+                    </p>
+                    <Button iconLeading={Plus} size="lg" onClick={onStart}>
+                        Submit an application
+                    </Button>
                 </div>
-            </AppLayout>
+            </div>
         );
     }
 
     return (
-        <AppLayout>
-            <div className="h-full">
-                <CopilotSidebar
-                    // AssistantMessage={AssistantMessage}
-                    // UserMessage={UserMessage}
-                    defaultOpen={true}
-                    icons={{
-                        sendIcon: <CornerDownLeft />,
-                        stopIcon: <StopCircle />,
-                    }}
-                    clickOutsideToClose={false}
-                    labels={{
-                        title: "Adlex AI",
-                    }}
-                />
-            </div>
-        </AppLayout>
+        <div className="h-full">
+            <CopilotSidebar
+                // AssistantMessage={AssistantMessage}
+                // UserMessage={UserMessage}
+                defaultOpen={true}
+                icons={{
+                    sendIcon: <CornerDownLeft />,
+                    stopIcon: <StopCircle />,
+                }}
+                clickOutsideToClose={false}
+                labels={{
+                    title: "Adlex AI",
+                }}
+            />
+        </div>
     );
 };
 

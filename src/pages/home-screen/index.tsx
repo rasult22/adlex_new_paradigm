@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'motion/react';
 import { AppLayout } from '../../components/app-layout';
 import { 
     createLicenseApplication,
+    deleteLicenseApplication,
     useLicenseApplications,
     type LicenseApplicationStatus,
 } from '@/queries';
 import { Button } from '@/components/base/buttons/button';
-import { Plus, Eye, ArrowRight } from '@untitledui/icons';
+import { Plus, Eye, ArrowRight, Trash01 } from '@untitledui/icons';
 import { useNavigate } from 'react-router';
 import { Table, TableCard } from '@/components/application/table/table';
 import { TableBody } from 'react-aria-components';
@@ -55,7 +56,9 @@ const ITEMS_PER_PAGE = 10;
 
 export const HomeScreen = () => {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const [page, setPage] = useState(1);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     // Fetch applications with pagination
     const { data: applicationsData, isLoading } = useLicenseApplications({
@@ -78,6 +81,20 @@ export const HomeScreen = () => {
         },
     });
 
+    // Mutation for deleting draft application
+    const deleteApplicationMutation = useMutation({
+        mutationFn: deleteLicenseApplication,
+        onSuccess: () => {
+            // Refetch applications after deletion
+            queryClient.invalidateQueries({ queryKey: ['license-applications'] });
+            setDeletingId(null);
+        },
+        onError: (error: Error) => {
+            console.error('Failed to delete application:', error);
+            setDeletingId(null);
+        },
+    });
+
     const handleStart = () => {
         const sessionId = generateSessionId();
         createApplicationMutation.mutate(sessionId);
@@ -85,6 +102,13 @@ export const HomeScreen = () => {
 
     const handleViewApplication = (applicationId: string, sessionId: string) => {
         navigate(`/create-license-application?application_id=${applicationId}&session_id=${sessionId}`);
+    };
+
+    const handleDeleteApplication = (applicationId: string) => {
+        if (confirm('Are you sure you want to delete this draft?')) {
+            setDeletingId(applicationId);
+            deleteApplicationMutation.mutate(applicationId);
+        }
     };
 
     const handlePageChange = (newPage: number) => {
@@ -215,14 +239,26 @@ export const HomeScreen = () => {
                                                     </span>
                                                 </Table.Cell>
                                                 <Table.Cell>
-                                                    <Button
-                                                        size="sm"
-                                                        color="link-gray"
-                                                        iconLeading={application.status === 'draft' ? ArrowRight : Eye}
-                                                        onClick={() => handleViewApplication(application.id, application.session_id)}
-                                                    >
-                                                        {application.status === 'draft' ? 'Continue' : 'View'}
-                                                    </Button>
+                                                    <div className="flex items-center gap-2">
+                                                        <Button
+                                                            size="sm"
+                                                            color="link-gray"
+                                                            iconLeading={application.status === 'draft' ? ArrowRight : Eye}
+                                                            onClick={() => handleViewApplication(application.id, application.session_id)}
+                                                        >
+                                                            {application.status === 'draft' ? 'Continue' : 'View'}
+                                                        </Button>
+                                                        {application.status === 'draft' && (
+                                                            <Button
+                                                                size="sm"
+                                                                color="link-gray"
+                                                                iconLeading={Trash01}
+                                                                isLoading={deletingId === application.id}
+                                                                onClick={() => handleDeleteApplication(application.id)}
+                                                                className="text-error-primary hover:text-error-primary"
+                                                            />
+                                                        )}
+                                                    </div>
                                                 </Table.Cell>
                                             </Table.Row>
                                         )}

@@ -109,8 +109,8 @@ const determineCurrentStep = (data: LicenseApplicationResponse): FormStep => {
         return 'shareholder-details';
     }
     
-    // If visa package exists, go to shareholders-info
-    if (data.visa_package_quantity !== null && data.visa_package_quantity !== undefined && data.visa_package_quantity >= 0) {
+    // If visa package exists (and is > 0), go to shareholders-info
+    if (data.visa_package_quantity !== null && data.visa_package_quantity !== undefined && data.visa_package_quantity > 0) {
         return 'shareholders-info';
     }
     
@@ -124,8 +124,8 @@ const determineCurrentStep = (data: LicenseApplicationResponse): FormStep => {
         return 'company-names';
     }
     
-    // Default to first step after contact-email (assuming they got here means email is done)
-    return 'business-activities';
+    // Default to first step (contact-email) for new/empty applications
+    return 'contact-email';
 };
 
 // Map API response to form data

@@ -1,6 +1,15 @@
+import { useState, useCallback } from 'react';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { useCopilotAction } from '@copilotkit/react-core';
+import { validateCompanyName, type CompanyNameValidationResult } from '@/queries';
+import { Check, AlertCircle } from '@untitledui/icons';
+
+interface ValidationState {
+    isLoading: boolean;
+    result: CompanyNameValidationResult | null;
+    error: string | null;
+}
 
 interface StepCompanyNamesProps {
     names: [string, string, string];
@@ -9,6 +18,106 @@ interface StepCompanyNamesProps {
 }
 
 export const StepCompanyNames = ({ names, onChange, errors = [] }: StepCompanyNamesProps) => {
+    const [validationStates, setValidationStates] = useState<[ValidationState, ValidationState, ValidationState]>([
+        { isLoading: false, result: null, error: null },
+        { isLoading: false, result: null, error: null },
+        { isLoading: false, result: null, error: null },
+    ]);
+
+    const handleValidate = useCallback(async (index: 0 | 1 | 2, value: string) => {
+        // Don't validate empty or very short names
+        if (!value || value.trim().length < 2) {
+            setValidationStates(prev => {
+                const newStates = [...prev] as [ValidationState, ValidationState, ValidationState];
+                newStates[index] = { isLoading: false, result: null, error: null };
+                return newStates;
+            });
+            return;
+        }
+
+        // Set loading state
+        setValidationStates(prev => {
+            const newStates = [...prev] as [ValidationState, ValidationState, ValidationState];
+            newStates[index] = { isLoading: true, result: null, error: null };
+            return newStates;
+        });
+
+        try {
+            const result = await validateCompanyName(value.trim());
+            setValidationStates(prev => {
+                const newStates = [...prev] as [ValidationState, ValidationState, ValidationState];
+                newStates[index] = { isLoading: false, result, error: null };
+                return newStates;
+            });
+        } catch (err) {
+            setValidationStates(prev => {
+                const newStates = [...prev] as [ValidationState, ValidationState, ValidationState];
+                newStates[index] = { isLoading: false, result: null, error: 'Failed to validate name' };
+                return newStates;
+            });
+        }
+    }, []);
+
+    const handleBlur = useCallback((index: 0 | 1 | 2) => {
+        handleValidate(index, names[index]);
+    }, [names, handleValidate]);
+
+    const handleChange = useCallback((index: 0 | 1 | 2, value: string) => {
+        onChange(index, value);
+        // Reset validation state when user types
+        setValidationStates(prev => {
+            const newStates = [...prev] as [ValidationState, ValidationState, ValidationState];
+            newStates[index] = { isLoading: false, result: null, error: null };
+            return newStates;
+        });
+    }, [onChange]);
+
+    const renderValidationStatus = (index: 0 | 1 | 2) => {
+        const state = validationStates[index];
+        
+        if (state.isLoading) {
+            return (
+                <div className="flex items-center gap-2 text-sm text-tertiary mt-1">
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-brand-solid border-t-transparent"></div>
+                    <span>Checking name</span>
+                </div>
+            );
+        }
+
+        if (state.result) {
+            if (state.result.is_valid) {
+                return (
+                    <div className="flex items-center gap-2 text-sm text-success-primary mt-1">
+                        <Check className="w-4 h-4" />
+                        <span>The check was successful.</span>
+                    </div>
+                );
+            } else {
+                return (
+                    <div className="flex items-center gap-2 text-sm text-error-primary mt-1">
+                        <AlertCircle className="w-4 h-4" />
+                        <span>The name is not suitable.</span>
+                    </div>
+                );
+            }
+        }
+
+        return null;
+    };
+
+    const getInputError = (index: 0 | 1 | 2) => {
+        const state = validationStates[index];
+        if (state.result && !state.result.is_valid) {
+            // Combine issues into error message
+            return state.result.issues.join(' ') || state.result.reasoning;
+        }
+        return errors[index];
+    };
+
+    const isInputInvalid = (index: 0 | 1 | 2): boolean => {
+        const state = validationStates[index];
+        return !!errors[index] || !!(state.result && !state.result.is_valid);
+    };
 
     useCopilotAction({
         name: 'suggestCompanyNames',
@@ -66,7 +175,7 @@ export const StepCompanyNames = ({ names, onChange, errors = [] }: StepCompanyNa
                                 className="flex items-center justify-between p-3 bg-white rounded-md border border-gray-200 hover:border-primary transition-colors"
                             >
                                 <div className="text-base font-medium text-text-primary">{name}</div>
-                                <Button onClick={() => onChange(index, name)}>
+                                <Button onClick={() => handleChange(index, name)}>
                                     Apply
                                 </Button>
                             </div>
@@ -88,41 +197,52 @@ export const StepCompanyNames = ({ names, onChange, errors = [] }: StepCompanyNa
             </div>
 
             <div className="space-y-4">
-                <Input
-                    label="First Choice"
-                    value={names[0]}
-                    onChange={(value) => {
-                        onChange(0, value);
-                    }}
-                    placeholder="Enter your first company name choice"
-                    isRequired
-                    isInvalid={!!errors[0]}
-                    hint={errors[0]}
-                    size="md"
-                />
+                <div>
+                    <Input
+                        label="1. First name *"
+                        value={names[0]}
+                        onChange={(value) => handleChange(0, value)}
+                        onBlur={() => handleBlur(0)}
+                        placeholder="Enter your first company name choice"
+                        isRequired
+                        isInvalid={isInputInvalid(0)}
+                        hint={getInputError(0)}
+                        size="md"
+                    />
+                    {renderValidationStatus(0)}
+                </div>
 
-                <Input
-                    label="Second Choice"
-                    value={names[1]}
-                    onChange={(value) => onChange(1, value)}
-                    placeholder="Enter your second company name choice"
-                    isRequired
-                    isInvalid={!!errors[1]}
-                    hint={errors[1]}
-                    size="md"
-                />
+                <div>
+                    <Input
+                        label="2. Second name *"
+                        value={names[1]}
+                        onChange={(value) => handleChange(1, value)}
+                        onBlur={() => handleBlur(1)}
+                        placeholder="Enter your second company name choice"
+                        isRequired
+                        isInvalid={isInputInvalid(1)}
+                        hint={getInputError(1)}
+                        size="md"
+                    />
+                    {renderValidationStatus(1)}
+                </div>
 
-                <Input
-                    label="Third Choice"
-                    value={names[2]}
-                    onChange={(value) => onChange(2, value)}
-                    placeholder="Enter your third company name choice"
-                    isRequired
-                    isInvalid={!!errors[2]}
-                    hint={errors[2]}
-                    size="md"
-                />
+                <div>
+                    <Input
+                        label="3. Third name *"
+                        value={names[2]}
+                        onChange={(value) => handleChange(2, value)}
+                        onBlur={() => handleBlur(2)}
+                        placeholder="Enter your third company name choice"
+                        isRequired
+                        isInvalid={isInputInvalid(2)}
+                        hint={getInputError(2)}
+                        size="md"
+                    />
+                    {renderValidationStatus(2)}
+                </div>
             </div>
         </div>
     );
 };
+

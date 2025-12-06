@@ -11,6 +11,13 @@ export {
   type SyncResponse,
 } from "./activities";
 
+// Company queries and mutations
+export {
+  validateCompanyName,
+  type CompanyNameInput,
+  type CompanyNameValidationResult,
+} from "./company";
+
 // License Application queries and mutations
 export {
   useLicenseApplications,

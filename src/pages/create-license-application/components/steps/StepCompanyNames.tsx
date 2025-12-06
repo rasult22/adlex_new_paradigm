@@ -193,7 +193,10 @@ export const StepCompanyNames = ({ names, onChange, errors = [], onValidationCha
                                 className="flex items-center justify-between p-3 bg-white rounded-md border border-gray-200 hover:border-primary transition-colors"
                             >
                                 <div className="text-base font-medium text-text-primary">{name}</div>
-                                <Button onClick={() => handleChange(index, name)}>
+                                <Button onClick={() => {
+                                    handleChange(index, name)
+                                    handleValidate(index, name)
+                                }}>
                                     Apply
                                 </Button>
                             </div>

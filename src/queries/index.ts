@@ -29,6 +29,7 @@ export {
   type BusinessActivityResponse,
   type ShareholderInput,
   type ShareholderResponse,
+  type PassportDataResponse,
   type LicenseApplicationInput,
   type LicenseApplicationResponse,
   type LicenseApplicationListParams,

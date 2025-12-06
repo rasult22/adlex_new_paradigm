@@ -8,7 +8,14 @@ import { Dotpoints02 } from '@untitledui/icons';
 import { useEffect, useState } from 'react';
 import { useCopilotFormState } from '@/hooks/use-copilot-form-state';
 import { useMutation } from '@tanstack/react-query';
-import { LicenseApplicationInput, updateLicenseApplication, updateShareholderPassport, uploadPassport } from '@/queries/license-application';
+import { 
+    LicenseApplicationInput, 
+    updateLicenseApplication, 
+    updateShareholderPassport, 
+    uploadPassport,
+    useGetLicenseApplication,
+    type LicenseApplicationResponse,
+} from '@/queries/license-application';
 
 type BusinessActivityState = {
     activity_id: number
@@ -70,6 +77,97 @@ const STEP_ORDER: FormStep[] = [
     'kyc',
 ];
 
+// Determine which step user should be on based on filled data
+const determineCurrentStep = (data: LicenseApplicationResponse): FormStep => {
+    // Check from the end to find the first completed step
+    // Then return the next step (or the current if not complete)
+    
+    // If shareholders have passport data confirmed, go to payment
+    if (data.shareholders?.length > 0 && data.shareholders.every(s => s.passport_data?.verified)) {
+        return 'payment';
+    }
+    
+    // If shareholders exist with passport uploaded, go to passport-review
+    if (data.shareholders?.length > 0 && data.shareholders.every(s => s.passport_uploaded)) {
+        return 'passport-review';
+    }
+    
+    // If shareholders exist, go to shareholder-details or next
+    if (data.shareholders?.length > 0 && data.number_of_shareholders) {
+        // Check if all shareholders have required data
+        const allShareholdersComplete = data.shareholders.every(s => 
+            s.email && s.phone && s.number_of_shares > 0 && s.roles?.length > 0
+        );
+        if (allShareholdersComplete) {
+            return 'passport-review';
+        }
+        return 'shareholder-details';
+    }
+    
+    // If shareholding info exists, go to shareholder-details
+    if (data.number_of_shareholders && data.total_shares) {
+        return 'shareholder-details';
+    }
+    
+    // If visa package exists, go to shareholders-info
+    if (data.visa_package_quantity !== null && data.visa_package_quantity !== undefined && data.visa_package_quantity >= 0) {
+        return 'shareholders-info';
+    }
+    
+    // If company names exist, go to visa-packages
+    if (data.company_name_1 && data.company_name_2 && data.company_name_3) {
+        return 'visa-packages';
+    }
+    
+    // If business activities exist, go to company-names
+    if (data.business_activities && data.business_activities.length > 0) {
+        return 'company-names';
+    }
+    
+    // Default to first step after contact-email (assuming they got here means email is done)
+    return 'business-activities';
+};
+
+// Map API response to form data
+const mapApiResponseToFormData = (data: LicenseApplicationResponse, session_id: string): Partial<FormData> => {
+    return {
+        application_id: data.id,
+        session_id: session_id,
+        contact_email: '', // Not stored in API
+        business_activities: data.business_activities?.map(a => ({
+            activity_id: a.activity_id,
+            is_main: a.is_main,
+            name: a.name,
+        })) || [],
+        company_name_1: data.company_name_1 || '',
+        company_name_2: data.company_name_2 || '',
+        company_name_3: data.company_name_3 || '',
+        visa_package_quantity: data.visa_package_quantity || 0,
+        number_of_shareholders: data.number_of_shareholders || 0,
+        total_shares: data.total_shares || 0,
+        shareholders: data.shareholders?.map(s => ({
+            email: s.email,
+            phone: s.phone,
+            number_of_shares: s.number_of_shares,
+            roles: s.roles as ShareholderRole[],
+            residential_address: s.residential_address || '',
+            is_uae_resident: s.is_uae_resident,
+            is_pep: s.is_pep,
+            backend_id: s.id,
+            is_passport_confirmed: s.passport_data?.verified || false,
+            extracted_passport: s.passport_data ? {
+                passport_number: s.passport_data.passport_number,
+                first_name: s.passport_data.first_name,
+                last_name: s.passport_data.last_name,
+                date_of_birth: s.passport_data.date_of_birth,
+                nationality: s.passport_data.nationality,
+                issue_date: s.passport_data.issue_date,
+                expiry_date: s.passport_data.expiry_date,
+            } : undefined,
+        })) || [],
+    };
+};
+
 export const CreateLicenseApplicationScreen = () => {
   const [searchParam] = useSearchParams()
   const {sendMessage} = useCopilotChatHeadless_c()
@@ -77,6 +175,7 @@ export const CreateLicenseApplicationScreen = () => {
   const session_id: string = searchParam.get('session_id') as string;
   const [currentStep, setCurrentStep] = useState<FormStep>('contact-email');
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [formData, setFormData] = useState<Partial<FormData>>({
         application_id,
         session_id,
@@ -90,6 +189,23 @@ export const CreateLicenseApplicationScreen = () => {
         total_shares: 0,
         shareholders: [],
     });
+
+    // Fetch existing application data
+    const { data: existingApplication, isLoading: isLoadingApplication } = useGetLicenseApplication(application_id);
+
+    // Populate form data when application is loaded
+    useEffect(() => {
+        if (existingApplication && !isInitialized) {
+            const mappedData = mapApiResponseToFormData(existingApplication, session_id);
+            setFormData(mappedData);
+            
+            // Determine which step to show based on data
+            const step = determineCurrentStep(existingApplication);
+            setCurrentStep(step);
+            
+            setIsInitialized(true);
+        }
+    }, [existingApplication, session_id, isInitialized]);
 
    
 //    const {setState, state} = useCoAgent<AgentState>({
@@ -417,7 +533,7 @@ export const CreateLicenseApplicationScreen = () => {
         return currentStep === STEP_ORDER[STEP_ORDER.length - 1];
     };
 
-    const isLoading = updateApplicationMutation.isPending;
+    const isLoading = updateApplicationMutation.isPending || isLoadingApplication;
 
     return <div className="flex h-dvh flex-row bg-primary">
           {/* Main Form Area */}

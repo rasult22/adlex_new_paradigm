@@ -29,6 +29,22 @@ export interface ShareholderInput {
   is_pep?: boolean;
 }
 
+export interface PassportDataResponse {
+  passport_number: string;
+  issue_date: string;
+  expiry_date: string;
+  country_of_issue: string;
+  place_of_issue: string;
+  date_of_birth: string;
+  country_of_birth: string;
+  nationality: string;
+  gender: string;
+  prefix: string;
+  first_name: string;
+  last_name: string;
+  verified: boolean;
+}
+
 export interface ShareholderResponse {
   id: string;
   email: string;
@@ -40,6 +56,7 @@ export interface ShareholderResponse {
   is_pep: boolean;
   passport_uploaded: boolean;
   passport_document_id: string | null;
+  passport_data?: PassportDataResponse | null;
 }
 
 export interface LicenseApplicationInput {

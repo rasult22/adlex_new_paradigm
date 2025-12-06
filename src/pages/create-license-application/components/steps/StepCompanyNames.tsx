@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { useCopilotAction } from '@copilotkit/react-core';
@@ -15,14 +15,25 @@ interface StepCompanyNamesProps {
     names: [string, string, string];
     onChange: (index: 0 | 1 | 2, value: string) => void;
     errors?: [string?, string?, string?];
+    onValidationChange?: (canProceed: boolean) => void;
 }
 
-export const StepCompanyNames = ({ names, onChange, errors = [] }: StepCompanyNamesProps) => {
+export const StepCompanyNames = ({ names, onChange, errors = [], onValidationChange }: StepCompanyNamesProps) => {
     const [validationStates, setValidationStates] = useState<[ValidationState, ValidationState, ValidationState]>([
         { isLoading: false, result: null, error: null },
         { isLoading: false, result: null, error: null },
         { isLoading: false, result: null, error: null },
     ]);
+
+    // Notify parent about validation state changes
+    useEffect(() => {
+        const hasAnyLoading = validationStates.some(state => state.isLoading);
+        const hasAnyInvalid = validationStates.some(state => state.result && !state.result.is_valid);
+        const allNamesFilled = names.every(name => name.trim().length > 0);
+
+        const canProceed = allNamesFilled && !hasAnyLoading && !hasAnyInvalid;
+        onValidationChange?.(canProceed);
+    }, [validationStates, names, onValidationChange]);
 
     const handleValidate = useCallback(async (index: 0 | 1 | 2, value: string) => {
         // Don't validate empty or very short names

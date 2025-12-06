@@ -26,6 +26,7 @@ interface FormContainerProps {
     isLoading?: boolean;
     error?: string | null;
     onDismissError?: () => void;
+    onCompanyNamesValidationChange?: (isValid: boolean) => void;
 }
 
 const STEPS: { id: FormStep; title: string; number: number }[] = [
@@ -52,6 +53,7 @@ export const FormContainer = ({
     isLoading = false,
     error = null,
     onDismissError,
+    onCompanyNamesValidationChange,
 }: FormContainerProps) => {
     const currentStepIndex = STEPS.findIndex(s => s.id === currentStep);
     const currentStepInfo = STEPS[currentStepIndex];
@@ -84,6 +86,7 @@ export const FormContainer = ({
                             formData.company_name_3 || ''
                         ]}
                         onChange={handlers.onCompanyNameChange}
+                        onValidationChange={onCompanyNamesValidationChange}
                     />
                 );
 

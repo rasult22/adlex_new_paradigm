@@ -176,6 +176,7 @@ export const CreateLicenseApplicationScreen = () => {
   const [currentStep, setCurrentStep] = useState<FormStep>('contact-email');
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [companyNamesValid, setCompanyNamesValid] = useState(false);
   const [formData, setFormData] = useState<Partial<FormData>>({
         application_id,
         session_id,
@@ -498,7 +499,7 @@ export const CreateLicenseApplicationScreen = () => {
             case 'business-activities':
                 return (formData.business_activities?.length || 0) >= 1 && (formData.business_activities?.length || 0) <= 3;
             case 'company-names':
-                return !!(formData.company_name_1?.trim() && formData.company_name_2?.trim() && formData.company_name_3?.trim());
+                return companyNamesValid;
             case 'visa-packages':
                 return (formData.visa_package_quantity || 0) > 0;
             case 'shareholders-info':
@@ -558,6 +559,7 @@ export const CreateLicenseApplicationScreen = () => {
                     isLoading={isLoading}
                     error={saveError}
                     onDismissError={() => setSaveError(null)}
+                    onCompanyNamesValidationChange={setCompanyNamesValid}
                 />
             </motion.div>
           </AnimatePresence>

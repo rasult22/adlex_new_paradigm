@@ -12,6 +12,7 @@ import { queryClient } from "./queries/client";
 import { CopilotKit } from "@copilotkit/react-core";
 import { CreateLicenseApplicationScreen } from "./pages/create-license-application";
 import { AuthScreen } from "./pages/sign-in";
+import { ProfileScreen } from "./pages/profile";
 import { ProtectedRoute } from "./components/protected-route";
 
 createRoot(document.getElementById("root")!).render(
@@ -35,6 +36,11 @@ createRoot(document.getElementById("root")!).render(
                                     <Route path="/create-license-application" element={
                                         <ProtectedRoute>
                                             <CreateLicenseApplicationScreen />
+                                        </ProtectedRoute>
+                                    } />
+                                    <Route path="/profile" element={
+                                        <ProtectedRoute>
+                                            <ProfileScreen />
                                         </ProtectedRoute>
                                     } />
                                     <Route path="/auth" element={<AuthScreen />} />

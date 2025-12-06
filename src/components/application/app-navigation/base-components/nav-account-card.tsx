@@ -1,15 +1,18 @@
 import type { FC, HTMLAttributes } from "react";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Placement } from "@react-types/overlays";
 import { BookOpen01, ChevronSelectorVertical, LogOut01, Plus, Settings01, User01 } from "@untitledui/icons";
 import { useFocusManager } from "react-aria";
 import type { DialogProps as AriaDialogProps } from "react-aria-components";
 import { Button as AriaButton, Dialog as AriaDialog, DialogTrigger as AriaDialogTrigger, Popover as AriaPopover } from "react-aria-components";
+import { useNavigate } from "react-router";
 import { AvatarLabelGroup } from "@/components/base/avatar/avatar-label-group";
 import { Button } from "@/components/base/buttons/button";
 import { RadioButtonBase } from "@/components/base/radio-buttons/radio-buttons";
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { cx } from "@/utils/cx";
+import { useAuthStore } from "@/stores/auth";
+import { logoutUser } from "@/queries/auth";
 
 type NavAccountType = {
     /** Unique identifier for the nav item. */
@@ -46,8 +49,25 @@ export const NavAccountMenu = ({
     selectedAccountId = "olivia",
     ...dialogProps
 }: AriaDialogProps & { className?: string; accounts?: NavAccountType[]; selectedAccountId?: string }) => {
+    const navigate = useNavigate();
+    const { refreshToken, clearAuth } = useAuthStore();
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
     const focusManager = useFocusManager();
     const dialogRef = useRef<HTMLDivElement>(null);
+
+    const handleLogout = async () => {
+        setIsLoggingOut(true);
+        try {
+            if (refreshToken) {
+                await logoutUser(refreshToken);
+            }
+        } catch (error) {
+            console.error("Logout error:", error);
+        } finally {
+            clearAuth();
+            navigate("/auth");
+        }
+    };
 
     const onKeyDown = useCallback(
         (e: KeyboardEvent) => {
@@ -84,8 +104,8 @@ export const NavAccountMenu = ({
         >
             <div className="rounded-xl bg-primary ring-1 ring-secondary">
                 <div className="flex flex-col gap-0.5 py-1.5">
-                    <NavAccountCardMenuItem label="View profile" icon={User01} shortcut="⌘K->P" />
-                    <NavAccountCardMenuItem label="Account settings" icon={Settings01} shortcut="⌘S" />
+                    <NavAccountCardMenuItem label="View profile" icon={User01} onClick={() => navigate("/profile")} />
+                    <NavAccountCardMenuItem label="Account settings" icon={Settings01} onClick={() => navigate("/profile")} />
                     <NavAccountCardMenuItem label="Documentation" icon={BookOpen01} />
                 </div>
                 <div className="flex flex-col gap-0.5 border-t border-secondary py-1.5">
@@ -115,7 +135,11 @@ export const NavAccountMenu = ({
             </div>
 
             <div className="pt-1 pb-1.5">
-                <NavAccountCardMenuItem label="Sign out" icon={LogOut01} shortcut="⌥⇧Q" />
+                <NavAccountCardMenuItem 
+                    label={isLoggingOut ? "Signing out..." : "Sign out"} 
+                    icon={LogOut01} 
+                    onClick={handleLogout}
+                />
             </div>
         </AriaDialog>
     );
@@ -163,22 +187,23 @@ export const NavAccountCard = ({
 }) => {
     const triggerRef = useRef<HTMLDivElement>(null);
     const isDesktop = useBreakpoint("lg");
+    const { user } = useAuthStore();
 
-    const selectedAccount = placeholderAccounts.find((account) => account.id === selectedAccountId);
-
-    if (!selectedAccount) {
-        console.warn(`Account with ID ${selectedAccountId} not found in <NavAccountCard />`);
-        return null;
-    }
+    // Use real user data if available, otherwise fall back to placeholder
+    const displayName = user 
+        ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email.split('@')[0]
+        : placeholderAccounts[0].name;
+    const displayEmail = user?.email || placeholderAccounts[0].email;
+    const displayAvatar = placeholderAccounts[0].avatar; // Use placeholder avatar
 
     return (
         <div ref={triggerRef} className="relative flex items-center gap-3 rounded-xl p-3 ring-1 ring-secondary ring-inset">
             <AvatarLabelGroup
                 size="md"
-                src={selectedAccount.avatar}
-                title={selectedAccount.name}
-                subtitle={selectedAccount.email}
-                status={selectedAccount.status}
+                src={displayAvatar}
+                title={displayName}
+                subtitle={displayEmail}
+                status="online"
             />
 
             <div className="absolute top-1.5 right-1.5">

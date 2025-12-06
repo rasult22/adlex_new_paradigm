@@ -31,7 +31,7 @@ const navigationItems = [
 const footerItems = [
     {
         label: "Settings",
-        href: "#settings",
+        href: "/profile",
         icon: Settings01,
     },
     {

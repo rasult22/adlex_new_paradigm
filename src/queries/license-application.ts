@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { BASE_URL } from "./client";
+import { useAuthStore } from "@/stores/auth";
 
 // Types based on OpenAPI schema
 export type LicenseApplicationStatus = "draft" | "submitted" | "in_progress" | "approved" | "rejected";
@@ -112,7 +113,12 @@ export const useGetLicenseApplication = (applicationId: string) => {
     queryFn: async (): Promise<LicenseApplicationResponse> => {
       const url = `${BASE_URL}/api/v1/license-application/${applicationId}`;
       
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${useAuthStore.getState().accessToken}`
+        }
+      });
       
       if (!response.ok) {
         throw new Error(`Failed to fetch license application: ${response.statusText}`);
@@ -138,7 +144,12 @@ export const useGetPassportUrl = (
 
       const url = `${BASE_URL}/api/v1/license-application/${applicationId}/shareholders/${shareholderId}/passport?${searchParams.toString()}`;
       
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${useAuthStore.getState().accessToken}`
+        }
+      });
       
       if (!response.ok) {
         throw new Error(`Failed to fetch passport URL: ${response.statusText}`);
@@ -159,6 +170,9 @@ export const createLicenseApplication = async (sessionId: string): Promise<Licen
   
   const response = await fetch(url, {
     method: "POST",
+    headers: {
+      Authorization: `Bearer ${useAuthStore.getState().accessToken}`
+    }
   });
   
   if (!response.ok) {
@@ -179,6 +193,7 @@ export const updateLicenseApplication = async (
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${useAuthStore.getState().accessToken}`
     },
     body: JSON.stringify(data),
   });
@@ -196,6 +211,9 @@ export const deleteLicenseApplication = async (applicationId: string): Promise<v
   
   const response = await fetch(url, {
     method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${useAuthStore.getState().accessToken}`
+    }
   });
   
   if (!response.ok) {
@@ -216,6 +234,9 @@ export const uploadPassport = async (
   
   const response = await fetch(url, {
     method: "POST",
+    headers: {
+      Authorization: `Bearer ${useAuthStore.getState().accessToken}`
+    },
     body: formData,
   });
   
@@ -235,6 +256,9 @@ export const extractPassportData = async (
 
   const response = await fetch(url, {
     method: "POST",
+    headers: {
+      Authorization: `Bearer ${useAuthStore.getState().accessToken}`
+    }
   });
 
   if (!response.ok) {
@@ -263,6 +287,7 @@ export const updateShareholderPassport = async (
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${useAuthStore.getState().accessToken}`
     },
     body: JSON.stringify(data),
   });
@@ -280,6 +305,9 @@ export const submitToIfza = async (applicationId: string): Promise<SubmitRespons
   
   const response = await fetch(url, {
     method: "POST",
+    headers: {
+      Authorization: `Bearer ${useAuthStore.getState().accessToken}`
+    }
   });
   
   if (!response.ok) {

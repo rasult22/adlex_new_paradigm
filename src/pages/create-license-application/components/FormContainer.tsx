@@ -80,6 +80,7 @@ export const FormContainer = ({
             case 'company-names':
                 return (
                     <StepCompanyNames
+                        application_id={formData.application_id || ''}
                         names={[
                             formData.company_name_1 || '',
                             formData.company_name_2 || '',

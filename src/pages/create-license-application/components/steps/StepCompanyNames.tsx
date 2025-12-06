@@ -12,13 +12,14 @@ interface ValidationState {
 }
 
 interface StepCompanyNamesProps {
+    application_id: string
     names: [string, string, string];
     onChange: (index: 0 | 1 | 2, value: string) => void;
     errors?: [string?, string?, string?];
     onValidationChange?: (canProceed: boolean) => void;
 }
 
-export const StepCompanyNames = ({ names, onChange, errors = [], onValidationChange }: StepCompanyNamesProps) => {
+export const StepCompanyNames = ({ names, onChange, errors = [], onValidationChange, application_id }: StepCompanyNamesProps) => {
     const [validationStates, setValidationStates] = useState<[ValidationState, ValidationState, ValidationState]>([
         { isLoading: false, result: null, error: null },
         { isLoading: false, result: null, error: null },
@@ -54,7 +55,7 @@ export const StepCompanyNames = ({ names, onChange, errors = [], onValidationCha
         });
 
         try {
-            const result = await validateCompanyName(value.trim());
+            const result = await validateCompanyName(value.trim(), application_id);
             setValidationStates(prev => {
                 const newStates = [...prev] as [ValidationState, ValidationState, ValidationState];
                 newStates[index] = { isLoading: false, result, error: null };

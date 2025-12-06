@@ -87,7 +87,7 @@ const ActivityInput = ({
         }
 
         return (
-            <div className="space-y-1">
+            <div className="space-y-1 max-w-[800px]">
                 <div className="flex items-center gap-2">
                     <label className="text-sm font-medium text-secondary">
                         {label}
@@ -144,6 +144,7 @@ const ActivityInput = ({
             <div className="relative">
                 <Input
                     placeholder="Type to search activities (min 2 characters)..."
+                    className="max-w-[600px]"
                     value={searchQuery}
                     onChange={setSearchQuery}
                     onFocus={() => setIsFocused(true)}
@@ -154,7 +155,7 @@ const ActivityInput = ({
 
                 {/* Search Results Dropdown */}
                 {isFocused && searchQuery.length >= 2 && (
-                    <div className="absolute top-full left-0 right-0 z-10 mt-1 max-h-64 overflow-y-auto bg-primary border border-border-primary rounded-lg shadow-lg">
+                    <div className="absolute top-full left-0 right-0 z-10 mt-1 max-h-64 overflow-y-auto bg-primary border border-border-primary rounded-lg shadow-lg max-w-[800px]">
                         {isLoading ? (
                             <div className="text-center py-4 text-sm text-tertiary">
                                 Searching...
@@ -192,7 +193,7 @@ const ActivityInput = ({
                 )}
 
                 {isFocused && searchQuery.length > 0 && searchQuery.length < 2 && (
-                    <div className="absolute top-full left-0 right-0 z-10 mt-1 bg-primary border border-border-primary rounded-lg shadow-lg">
+                    <div className="absolute top-full left-0 right-0 z-10 mt-1 bg-primary border border-border-primary rounded-lg shadow-lg max-w-[800px]">
                         <p className="text-xs text-tertiary text-center py-3">
                             Type at least 2 characters to search
                         </p>

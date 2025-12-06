@@ -17,14 +17,14 @@ export interface CompanyNameValidationResult {
 }
 
 // Validate company name
-export const validateCompanyName = async (companyName: string): Promise<CompanyNameValidationResult> => {
+export const validateCompanyName = async (companyName: string, application_id: string): Promise<CompanyNameValidationResult> => {
   const response = await fetch(`${BASE_URL}/api/v1/company/validate-name`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${useAuthStore.getState().accessToken}`,
     },
-    body: JSON.stringify({ company_name: companyName } as CompanyNameInput),
+    body: JSON.stringify({ company_name: companyName, application_id } as CompanyNameInput),
   });
 
   if (!response.ok) {

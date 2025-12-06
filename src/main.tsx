@@ -16,7 +16,6 @@ import { ProfileScreen } from "./pages/profile";
 import { ProtectedRoute } from "./components/protected-route";
 
 createRoot(document.getElementById("root")!).render(
-    <StrictMode>
         <ThemeProvider>
             <QueryClientProvider client={queryClient}>
                 <AuthProvider>
@@ -58,5 +57,4 @@ createRoot(document.getElementById("root")!).render(
                 </AuthProvider>
             </QueryClientProvider>
         </ThemeProvider>
-    </StrictMode>,
 );

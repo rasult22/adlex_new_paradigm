@@ -12,6 +12,7 @@ import { StepPayment } from './steps/StepPayment';
 import { StepKYC } from './steps/StepKYC';
 import { StepPassportReview } from './steps/StepPassportReview';
 import { ButtonUtility } from '@/components/base/buttons/button-utility';
+import { useNavigate } from 'react-router';
 
 interface FormContainerProps {
     currentStep: FormStep;
@@ -54,6 +55,7 @@ export const FormContainer = ({
 }: FormContainerProps) => {
     const currentStepIndex = STEPS.findIndex(s => s.id === currentStep);
     const currentStepInfo = STEPS[currentStepIndex];
+    const navigate = useNavigate();
 
     const renderStep = () => {
         switch (currentStep) {
@@ -186,9 +188,9 @@ export const FormContainer = ({
             <div className='px-6 pt-6'>
                 {/* breadcrumbs */}
                 <div className='flex items-center gap-2'>
-                    <ButtonUtility color='tertiary' icon={HomeLine} />
+                    <ButtonUtility onClick={() => navigate('/',{ replace: true })} color='tertiary' icon={HomeLine} />
                     <ChevronRight size={16} className='text-fg-quaternary'/>
-                    <Button color='tertiary'>
+                    <Button onClick={() => navigate('/',{ replace: true })} color='tertiary'>
                         <span className='font-semibold'>
                             Applications
                         </span>
@@ -200,14 +202,19 @@ export const FormContainer = ({
                         </span>
                     </Button>
                 </div>
+                <div className='flex justify-between mt-4'>
+                    <div className='text-[24px] leading-[32px] font-semibold'>New membership application for IFZA</div>
+                    <Button color='secondary'>Save and exit</Button>
+                </div>
             </div>
+
 
             {/* Progress Indicator */}
             <div className="border-b border-border-primary p-6">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-2">
                     <div>
-                        <p className="text-sm text-tertiary">Step {currentStepInfo.number} of {STEPS.length}</p>
-                        <h1 className="text-xl font-semibold text-primary">{currentStepInfo.title}</h1>
+                        <p className="font-semibold text-text-brand-secondary mb-2">Step {currentStepInfo.number} of {STEPS.length}</p>
+                        <h1 className="text-xl font-semibold text-text-brand-secondary">{currentStepInfo.title}</h1>
                     </div>
                 </div>
                 
@@ -216,7 +223,7 @@ export const FormContainer = ({
                     {STEPS.map((step, index) => (
                         <div
                             key={step.id}
-                            className={`h-1 flex-1 rounded-full transition-colors ${
+                            className={`h-[4px] flex-1 rounded-full transition-colors ${
                                 index <= currentStepIndex
                                     ? 'bg-brand-solid'
                                     : 'bg-secondary'

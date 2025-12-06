@@ -10,6 +10,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./queries/client";
 import { CopilotKit } from "@copilotkit/react-core";
 import { CreateLicenseApplicationScreen } from "./pages/create-license-application";
+import { AuthScreen } from "./pages/sign-in";
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
@@ -25,6 +26,7 @@ createRoot(document.getElementById("root")!).render(
                             <Routes>
                                 <Route path="/" element={<HomeScreen />} />
                                 <Route path="/create-license-application" element={<CreateLicenseApplicationScreen />} />
+                                <Route path="/auth" element={<AuthScreen />} />
                                 <Route path="*" element={<NotFound />} />
                             </Routes>
                         </RouteProvider>

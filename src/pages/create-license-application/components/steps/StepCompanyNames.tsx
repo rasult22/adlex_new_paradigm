@@ -3,7 +3,7 @@ import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { useCopilotAction } from '@copilotkit/react-core';
 import { validateCompanyName, type CompanyNameValidationResult } from '@/queries';
-import { Check, AlertCircle } from '@untitledui/icons';
+import { Loading01 } from '@untitledui/icons';
 
 interface ValidationState {
     isLoading: boolean;
@@ -89,7 +89,7 @@ export const StepCompanyNames = ({ names, onChange, errors = [], onValidationCha
         if (state.isLoading) {
             return (
                 <div className="flex items-center gap-2 text-sm text-tertiary mt-1">
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-brand-solid border-t-transparent"></div>
+                    <Loading01 className='animate-spin h-4 w-4 text-bg-brand-section_subtle'/>
                     <span>Checking name</span>
                 </div>
             );
@@ -98,15 +98,22 @@ export const StepCompanyNames = ({ names, onChange, errors = [], onValidationCha
         if (state.result) {
             if (state.result.is_valid) {
                 return (
-                    <div className="flex items-center gap-2 text-sm text-success-primary mt-1">
-                        <Check className="w-4 h-4" />
+                    <div className="flex items-center gap-2 text-sm text-text-tertiary mt-1">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12Z" fill="#EAF3FF"/>
+                            <path fillRule="evenodd" clipRule="evenodd" d="M17.0965 7.39004L9.9365 14.3L8.0365 12.27C7.6865 11.94 7.1365 11.92 6.7365 12.2C6.3465 12.49 6.2365 13 6.4765 13.41L8.7265 17.07C8.9465 17.41 9.3265 17.62 9.7565 17.62C10.1665 17.62 10.5565 17.41 10.7765 17.07C11.1365 16.6 18.0065 8.41004 18.0065 8.41004C18.9065 7.49004 17.8165 6.68004 17.0965 7.38004V7.39004Z" fill="#084BBF"/>
+                        </svg>
                         <span>The check was successful.</span>
                     </div>
                 );
             } else {
                 return (
                     <div className="flex items-center gap-2 text-sm text-error-primary mt-1">
-                        <AlertCircle className="w-4 h-4" />
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12Z" fill="#FEE4E2"/>
+                            <path d="M17.3486 7.3678L7.34863 17.3678M7.34863 7.3678L17.3486 17.3678" stroke="#F04438" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+
                         <span>The name is not suitable.</span>
                     </div>
                 );
@@ -208,8 +215,9 @@ export const StepCompanyNames = ({ names, onChange, errors = [], onValidationCha
             </div>
 
             <div className="space-y-4">
-                <div>
+                <div className='flex items-start gap-3'>
                     <Input
+                        className="w-[50%]"
                         label="1. First name *"
                         value={names[0]}
                         onChange={(value) => handleChange(0, value)}
@@ -220,11 +228,14 @@ export const StepCompanyNames = ({ names, onChange, errors = [], onValidationCha
                         hint={getInputError(0)}
                         size="md"
                     />
-                    {renderValidationStatus(0)}
+                    <div className='mt-8'>
+                        {renderValidationStatus(0)}
+                    </div>
                 </div>
 
-                <div>
+                <div className='flex items-start gap-3'>
                     <Input
+                        className="w-[50%]"
                         label="2. Second name *"
                         value={names[1]}
                         onChange={(value) => handleChange(1, value)}
@@ -235,11 +246,14 @@ export const StepCompanyNames = ({ names, onChange, errors = [], onValidationCha
                         hint={getInputError(1)}
                         size="md"
                     />
-                    {renderValidationStatus(1)}
+                    <div className='mt-8'>
+                        {renderValidationStatus(1)}
+                    </div>
                 </div>
 
-                <div>
+                <div className='flex items-start gap-3'>
                     <Input
+                        className="w-[50%]"
                         label="3. Third name *"
                         value={names[2]}
                         onChange={(value) => handleChange(2, value)}
@@ -250,7 +264,9 @@ export const StepCompanyNames = ({ names, onChange, errors = [], onValidationCha
                         hint={getInputError(2)}
                         size="md"
                     />
-                    {renderValidationStatus(2)}
+                    <div className='mt-8'>
+                        {renderValidationStatus(2)}
+                    </div>
                 </div>
             </div>
         </div>

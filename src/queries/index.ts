@@ -38,3 +38,23 @@ export {
 
 // Query client
 export { queryClient, BASE_URL } from "./client";
+
+// Auth queries and mutations
+export {
+  registerUser,
+  loginUser,
+  refreshTokens,
+  logoutUser,
+  logoutAllDevices,
+  getCurrentUser,
+  changePassword,
+  type UserRole,
+  type UserResponse,
+  type TokenResponse,
+  type UserWithTokensResponse,
+  type UserRegisterRequest,
+  type UserLoginRequest,
+  type RefreshTokenRequest,
+  type ChangePasswordRequest,
+  type MessageResponse,
+} from "./auth";

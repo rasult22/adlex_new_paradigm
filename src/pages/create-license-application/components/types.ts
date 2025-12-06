@@ -9,6 +9,9 @@ import type {
 // Extended business activity type with name (for display purposes)
 export interface BusinessActivitySelection extends BusinessActivityInput {
     name?: string; // Activity name for display
+    description?: string; // Activity description for hint
+    code?: string; // Activity code
+    license_type?: string; // License type (e.g., Commercial)
 }
 
 // Extended shareholder type with passport file (not sent to API directly)

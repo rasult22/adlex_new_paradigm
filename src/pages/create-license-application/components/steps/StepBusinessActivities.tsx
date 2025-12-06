@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Input } from '@/components/base/input/input';
 import { useListActivities, useSearchActivities, type BusinessActivity } from '@/queries';
 import type { BusinessActivitySelection } from '../types';
@@ -15,6 +15,16 @@ export const StepBusinessActivities = ({
     error,
 }: StepBusinessActivitiesProps) => {
     const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+
+    // Debounce search query - wait 300ms after user stops typing
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearchQuery(searchQuery);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
 
     // Fetch initial activities list
     const { data: activitiesListData, isLoading: isLoadingList } = useListActivities({
@@ -23,13 +33,13 @@ export const StepBusinessActivities = ({
 
     // Search activities (only when query is at least 2 characters)
     const { data: searchResults, isLoading: isSearching } = useSearchActivities({
-        q: searchQuery,
+        q: debouncedSearchQuery,
         limit: 20,
     });
 
     // Use search results if searching, otherwise use the full list
     const availableActivities: BusinessActivity[] = useMemo(() => {
-        const activities = searchQuery.length >= 2 
+        const activities = debouncedSearchQuery.length >= 2 
             ? (searchResults || [])
             : (activitiesListData?.items || []);
         
@@ -39,7 +49,7 @@ export const StepBusinessActivities = ({
                 selected => selected.activity_id === parseInt(activity.id)
             )
         );
-    }, [searchQuery, searchResults, activitiesListData, selectedActivities]);
+    }, [debouncedSearchQuery, searchResults, activitiesListData, selectedActivities]);
 
     const isLoading = isLoadingList || isSearching;
 

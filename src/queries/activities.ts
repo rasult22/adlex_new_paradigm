@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { BASE_URL } from "./client";
+import { useAuthStore } from "@/stores/auth";
 
 // Types based on OpenAPI schema
 export interface BusinessActivity {
@@ -45,7 +46,12 @@ export const useListActivities = (params?: ListActivitiesParams) => {
 
       const url = `${BASE_URL}/api/v1/activities${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
       
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${useAuthStore.getState().accessToken}`
+        }
+      });
       
       if (!response.ok) {
         throw new Error(`Failed to fetch activities: ${response.statusText}`);
@@ -67,7 +73,12 @@ export const useSearchActivities = (params: SearchActivitiesParams) => {
 
       const url = `${BASE_URL}/api/v1/activities/search?${searchParams.toString()}`;
       
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${useAuthStore.getState().accessToken}`
+        }
+      });
       
       if (!response.ok) {
         throw new Error(`Failed to search activities: ${response.statusText}`);
@@ -86,7 +97,12 @@ export const useGetActivity = (activityId: string) => {
     queryFn: async (): Promise<BusinessActivity> => {
       const url = `${BASE_URL}/api/v1/activities/${activityId}`;
       
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${useAuthStore.getState().accessToken}`
+        }
+      });
       
       if (!response.ok) {
         throw new Error(`Failed to fetch activity: ${response.statusText}`);
@@ -112,6 +128,9 @@ export const syncActivitiesFromIfza = async (): Promise<SyncResponse> => {
   
   const response = await fetch(url, {
     method: "POST",
+    headers: {
+      Authorization: `Bearer ${useAuthStore.getState().accessToken}`
+    }
   });
   
   if (!response.ok) {

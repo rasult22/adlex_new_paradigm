@@ -1,4 +1,4 @@
-export const AdlexLogo = ({ className }: { className?: string }) => {
+export const AdlexLogo = ({}: { className?: string }) => {
     return (
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
          <path d="M18 0C21.4198 0 24.617 0.953457 27.3398 2.60938C27.3353 2.60751 27.3308 2.60537 27.3262 2.60352C29.9147 6.16592 29.9554 11.1449 27.1084 14.7871C24.2614 18.429 19.4207 19.5901 15.3389 17.9385C15.8815 18.6854 16.5342 19.3718 17.2979 19.9688C21.7035 23.4122 28.067 22.6331 31.5107 18.2275C34 15.0429 34.2809 10.8356 32.582 7.44727C34.7315 10.4123 36 14.0577 36 18C36 27.9411 27.9411 36 18 36C8.05887 36 0 27.9411 0 18C0 8.05887 8.05887 0 18 0Z" fill="#084BBF"/>
@@ -6,7 +6,7 @@ export const AdlexLogo = ({ className }: { className?: string }) => {
     );
 };
 
-export const IFZALogo = ({ className }: { className?: string }) => {
+export const IFZALogo = ({}: { className?: string }) => {
     return (
         <svg width="72" height="20" viewBox="0 0 72 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
             <rect width="71.5789" height="19.9721" fill="url(#pattern0_4_24139)"/>

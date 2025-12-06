@@ -1,5 +1,5 @@
 import { useCopilotReadable } from "@copilotkit/react-core";
-import type { FormData, FormStep } from "@/pages/home-screen/components/types";
+import type { FormData, FormStep } from "@/pages/create-license-application/components/types";
 
 /**
  * Custom hook to sync form data with CopilotKit's shared state
@@ -17,7 +17,7 @@ export const useCopilotFormState = (
             applicationId: formData.application_id,
             sessionId: formData.session_id,
             contactEmail: formData.contact_email,
-            businessActivities: formData.business_activities?.map(activity => ({
+            businessActivities: formData.business_activities?.map((activity: any) => ({
                 activityId: activity.activity_id,
                 isMain: activity.is_main,
                 name: activity.name,
@@ -32,7 +32,7 @@ export const useCopilotFormState = (
                 numberOfShareholders: formData.number_of_shareholders,
                 totalShares: formData.total_shares,
             },
-            shareholders: formData.shareholders?.map(sh => ({
+            shareholders: formData.shareholders?.map((sh: any)=> ({
                 email: sh.email,
                 phone: sh.phone,
                 numberOfShares: sh.number_of_shares,
@@ -59,7 +59,7 @@ export const useCopilotFormState = (
             isVisaPackagesComplete: (formData.visa_package_quantity || 0) > 0,
             isShareholderInfoComplete: (formData.number_of_shareholders || 0) > 0 && (formData.total_shares || 0) > 0,
             isShareholderDetailsComplete: formData.shareholders?.length === formData.number_of_shareholders,
-            isPassportReviewComplete: formData.shareholders?.every(sh => sh.is_passport_confirmed),
+            isPassportReviewComplete: formData.shareholders?.every((sh:any) => sh.is_passport_confirmed),
         },
     });
 };
@@ -77,7 +77,7 @@ function getCompletedSteps(formData: Partial<FormData>, currentStep: FormStep): 
     if ((formData.visa_package_quantity || 0) > 0) completed.push('visa-packages');
     if ((formData.number_of_shareholders || 0) > 0 && (formData.total_shares || 0) > 0) completed.push('shareholders-info');
     if (formData.shareholders?.length === formData.number_of_shareholders) completed.push('shareholder-details');
-    if (formData.shareholders?.every(sh => sh.is_passport_confirmed)) completed.push('passport-review');
+    if (formData.shareholders?.every((sh:any) => sh.is_passport_confirmed)) completed.push('passport-review');
     
     return completed;
 }

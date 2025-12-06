@@ -1,4 +1,4 @@
-import { useCoAgent, useCopilotAction, useCopilotChatHeadless_c } from '@copilotkit/react-core';
+import { useCopilotAction, useCopilotChatHeadless_c } from '@copilotkit/react-core';
 import type { FormData, FormStep, FormHandlers, BusinessActivitySelection, ShareholderData, ShareholderRole } from './components/types';
 import { useSearchParams } from 'react-router';
 import { AnimatePresence, motion } from 'motion/react';
@@ -8,7 +8,7 @@ import { Dotpoints02 } from '@untitledui/icons';
 import { useEffect, useState } from 'react';
 import { useCopilotFormState } from '@/hooks/use-copilot-form-state';
 import { useMutation } from '@tanstack/react-query';
-import { createLicenseApplication, LicenseApplicationInput, updateLicenseApplication, updateShareholderPassport, uploadPassport } from '@/queries/license-application';
+import { LicenseApplicationInput, updateLicenseApplication, updateShareholderPassport, uploadPassport } from '@/queries/license-application';
 
 type BusinessActivityState = {
     activity_id: number
@@ -34,7 +34,7 @@ type ShareholderState = {
     date_of_birth?: string 
 }
 
-type AgentState = {
+export type AgentState = {
     // Identifiers
     application_id: string,
     // Business Activities (1-3)
@@ -72,11 +72,10 @@ const STEP_ORDER: FormStep[] = [
 
 export const CreateLicenseApplicationScreen = () => {
   const [searchParam] = useSearchParams()
-  const {sendMessage, isLoading: isChatLoding} = useCopilotChatHeadless_c()
+  const {sendMessage} = useCopilotChatHeadless_c()
   const application_id: string = searchParam.get('application_id') as string;
   const session_id: string = searchParam.get('session_id') as string;
   const [currentStep, setCurrentStep] = useState<FormStep>('contact-email');
-  const [initial, setInitial] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<FormData>>({
         application_id,

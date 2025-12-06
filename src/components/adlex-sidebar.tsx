@@ -44,7 +44,6 @@ const footerItems = [
                 color="success"
                 type="pill-color"
                 size="sm"
-                dot
             >
                 Online
             </Badge>

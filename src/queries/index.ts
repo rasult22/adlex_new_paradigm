@@ -13,6 +13,7 @@ export {
 
 // License Application queries and mutations
 export {
+  useLicenseApplications,
   useGetLicenseApplication,
   useGetPassportUrl,
   createLicenseApplication,
@@ -30,6 +31,8 @@ export {
   type ShareholderResponse,
   type LicenseApplicationInput,
   type LicenseApplicationResponse,
+  type LicenseApplicationListParams,
+  type LicenseApplicationListResponse,
   type PassportUrlResponse,
   type PassportUploadResponse,
   type ExtractPassportResponse,

@@ -106,6 +106,49 @@ export interface SubmitResponse {
   validation_errors: string[];
 }
 
+// List applications params and response
+export interface LicenseApplicationListParams {
+  limit?: number;
+  offset?: number;
+  status?: LicenseApplicationStatus;
+}
+
+export interface LicenseApplicationListResponse {
+  items: LicenseApplicationResponse[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+// Query: Get License Applications List
+export const useLicenseApplications = (params?: LicenseApplicationListParams) => {
+  return useQuery({
+    queryKey: ["license-applications", params],
+    queryFn: async (): Promise<LicenseApplicationListResponse> => {
+      const searchParams = new URLSearchParams();
+      
+      if (params?.limit !== undefined) searchParams.append("limit", params.limit.toString());
+      if (params?.offset !== undefined) searchParams.append("offset", params.offset.toString());
+      if (params?.status) searchParams.append("status", params.status);
+
+      const url = `${BASE_URL}/api/v1/license-application/${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${useAuthStore.getState().accessToken}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch license applications: ${response.statusText}`);
+      }
+      
+      return response.json();
+    },
+  });
+};
+
 // Query: Get License Application
 export const useGetLicenseApplication = (applicationId: string) => {
   return useQuery({

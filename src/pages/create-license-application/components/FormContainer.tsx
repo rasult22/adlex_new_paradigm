@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Check, HomeLine } from '@untitledui/icons';
+import { ArrowLeft, ArrowRight, Check, ChevronRight, HomeLine } from '@untitledui/icons';
 import { Button } from '@/components/base/buttons/button';
 import { AnimatePresence, motion } from 'motion/react';
 import type { FormStep, FormData, FormHandlers } from './types';
@@ -183,11 +183,22 @@ export const FormContainer = ({
             </AnimatePresence>
 
             {/* Header */}
-            <div className='px-6'>
+            <div className='px-6 pt-6'>
                 {/* breadcrumbs */}
-                <div>
+                <div className='flex items-center gap-2'>
                     <ButtonUtility color='tertiary' icon={HomeLine} />
-                    
+                    <ChevronRight size={16} className='text-fg-quaternary'/>
+                    <Button color='tertiary'>
+                        <span className='font-semibold'>
+                            Applications
+                        </span>
+                    </Button>
+                    <ChevronRight size={16} className='text-fg-quaternary'/>
+                    <Button color='tertiary'>
+                        <span className='font-semibold text-text-tertiary_hover'>
+                            Submit an application
+                        </span>
+                    </Button>
                 </div>
             </div>
 

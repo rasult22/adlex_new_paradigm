@@ -82,7 +82,7 @@ export const StepShareholderDetails = ({
                     return (
                         <div
                             key={index}
-                            className="p-6 rounded-xl bg-secondary ring-1 ring-border-primary space-y-4"
+                            className="p-6 rounded-xl ring-1 ring-border-secondary space-y-4 max-w-[800px]"
                         >
                             <h3 className="text-lg font-semibold text-primary">
                                 Shareholder {index + 1}

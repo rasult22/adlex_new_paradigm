@@ -173,7 +173,7 @@ export const HomeScreen = () => {
                                 />
                                 <Table aria-label="Applications table">
                                     <Table.Header>
-                                        <Table.Head>Company Names</Table.Head>
+                                        <Table.Head isRowHeader>Company Names</Table.Head>
                                         <Table.Head>Status</Table.Head>
                                         <Table.Head>Activities</Table.Head>
                                         <Table.Head>Progress</Table.Head>

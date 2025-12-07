@@ -112,7 +112,7 @@ export const StepCompanyNames = ({ names, onChange, errors = [], onValidationCha
                     <div className="flex items-center gap-2 text-sm text-error-primary mt-1">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12Z" fill="#FEE4E2"/>
-                            <path d="M17.3486 7.3678L7.34863 17.3678M7.34863 7.3678L17.3486 17.3678" stroke="#F04438" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M17.3486 7.3678L7.34863 17.3678M7.34863 7.3678L17.3486 17.3678" stroke="#F04438" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
 
                         <span>The name is not suitable.</span>

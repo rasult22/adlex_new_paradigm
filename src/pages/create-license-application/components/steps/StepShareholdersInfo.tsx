@@ -1,4 +1,5 @@
 import { Input } from '@/components/base/input/input';
+import * as Alerts from "@/components/application/alerts/alerts";
 
 interface StepShareholdersInfoProps {
     numberOfShareholders: number;
@@ -29,6 +30,7 @@ export const StepShareholdersInfo = ({
 
             <div className="space-y-4">
                 <Input
+                    className="max-w-[400px]"
                     label="Number of Shareholders"
                     type="number"
                     value={numberOfShareholders.toString()}
@@ -41,6 +43,7 @@ export const StepShareholdersInfo = ({
                 />
 
                 <Input
+                    className="max-w-[400px]"
                     label="Total Number of Shares"
                     type="number"
                     value={totalShares.toString()}
@@ -51,12 +54,35 @@ export const StepShareholdersInfo = ({
                     hint={errors.totalShares || 'Total shares to be distributed among shareholders'}
                     size="md"
                 />
-            </div>
-
-            <div className="p-4 rounded-lg bg-secondary ring-1 ring-border-primary">
-                <p className="text-sm text-tertiary">
-                    <strong className="text-primary">Next Step:</strong> You'll provide detailed information for each of the {numberOfShareholders || 0} shareholder(s).
-                </p>
+                <Input
+                    className="max-w-[400px]"
+                    label="Share value"
+                    type="number"
+                    placeholder="0 AED"
+                    isRequired
+                    hint="Please note the minimum share value per share is AED 10"
+                    size="md"
+                />
+                <div className='max-w-[880px]'>
+                    <Alerts.AlertFloating
+                        color="default"
+                        title="Note:"
+                        description={<>
+                            <ul className='list-disc list-inside text-wrap max-w-[800px]'>
+                                <li>
+                                    Maximum Share Capital without paid share capital letter is AED 150,000, Any amount above AED 150,000 will need a Share Capital letter from the bank.
+                                </li>
+                                <li>
+                                    Recommended Share capital per shareholder is AED 48,000/- for any IFZA company if you intend to apply for Partner or investor visa.
+                                </li>
+                                <li>
+                                    Up to 10 shareholders are allowed for the application. If you are looking to have more than 10 shareholders, please get in touch with your Client Engagement Manager​
+                                </li>
+                            </ul>
+                        </>}
+                        confirmLabel="View changes"
+                    />
+                </div>
             </div>
         </div>
     );

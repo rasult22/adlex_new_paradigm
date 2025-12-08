@@ -165,7 +165,7 @@ export const FormContainer = ({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -50 }}
                         transition={{ duration: 0.3, ease: 'easeOut' }}
-                        className="absolute top-0 left-0 right-0 z-40 bg-error-primary text-white px-6 py-3 flex items-center justify-between"
+                        className="absolute top-0 left-0 right-0 z-40 bg-error-primary text-text-error-primary px-6 py-3 flex items-center justify-between"
                     >
                         <div className="flex items-center gap-2">
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -176,7 +176,7 @@ export const FormContainer = ({
                         {onDismissError && (
                             <button
                                 onClick={onDismissError}
-                                className="text-white hover:text-white/80 transition-colors"
+                                className="text-text-error-primary hover:text-text-error-primary/80 transition-colors"
                                 aria-label="Dismiss error"
                             >
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

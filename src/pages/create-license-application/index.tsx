@@ -16,6 +16,7 @@ import {
     useGetLicenseApplication,
     type LicenseApplicationResponse,
 } from '@/queries/license-application';
+import { useStepsInfo } from '@/hooks/use-steps-info';
 
 type BusinessActivityState = {
     activity_id: number
@@ -240,7 +241,7 @@ export const CreateLicenseApplicationScreen = () => {
 //     useEffect(() => {
 //         console.log("SHARED STATE CHANGED", state)
 //     }, [state])
-
+    useStepsInfo()
      // Action для отображения переходов между этапами
     useCopilotAction({
         name: "show_step_transition",
@@ -265,13 +266,13 @@ export const CreateLicenseApplicationScreen = () => {
     // Sync form state with CopilotKit
     useCopilotFormState(formData, currentStep);
     useEffect(() => {
-        if (currentStep !== 'contact-email') {
+        // if (currentStep !== 'contact-email') {
             sendMessage({
                 id: `${new Date().getTime()}`,
                 content: `Покажи show_step_transition`,
                 role: 'developer',
             })
-        }
+        // }
   }, [currentStep])
 
     // Form handlers

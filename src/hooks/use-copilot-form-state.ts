@@ -1,5 +1,5 @@
 import { useCopilotReadable } from "@copilotkit/react-core";
-import type { FormData, FormStep } from "@/pages/create-license-application/components/types";
+import type { FormData, FormStep, ShareholderData } from "@/pages/create-license-application/components/types";
 
 /**
  * Custom hook to sync form data with CopilotKit's shared state
@@ -11,11 +11,14 @@ export const useCopilotFormState = (
 ) => {
     // Make form data readable by the agent
     useCopilotReadable({
+        description: "Current step of the license application form",
+        value: `currentStep step is: ${currentStep}`
+    })
+    useCopilotReadable({
         description: "Current license application form data and progress",
         value: {
             currentStep,
             applicationId: formData.application_id,
-            sessionId: formData.session_id,
             contactEmail: formData.contact_email,
             businessActivities: formData.business_activities?.map((activity: any) => ({
                 activityId: activity.activity_id,
@@ -32,7 +35,7 @@ export const useCopilotFormState = (
                 numberOfShareholders: formData.number_of_shareholders,
                 totalShares: formData.total_shares,
             },
-            shareholders: formData.shareholders?.map((sh: any)=> ({
+            shareholders: formData.shareholders?.map((sh: ShareholderData)=> ({
                 email: sh.email,
                 phone: sh.phone,
                 numberOfShares: sh.number_of_shares,
@@ -47,21 +50,21 @@ export const useCopilotFormState = (
         },
     });
 
-    // Make step progress readable
-    useCopilotReadable({
-        description: "Application completion status",
-        value: {
-            currentStep,
-            stepsCompleted: getCompletedSteps(formData, currentStep),
-            isContactEmailComplete: !!formData.contact_email,
-            isBusinessActivitiesComplete: (formData.business_activities?.length || 0) >= 1,
-            isCompanyNamesComplete: !!(formData.company_name_1 && formData.company_name_2 && formData.company_name_3),
-            isVisaPackagesComplete: (formData.visa_package_quantity || 0) > 0,
-            isShareholderInfoComplete: (formData.number_of_shareholders || 0) > 0 && (formData.total_shares || 0) > 0,
-            isShareholderDetailsComplete: formData.shareholders?.length === formData.number_of_shareholders,
-            isPassportReviewComplete: formData.shareholders?.every((sh:any) => sh.is_passport_confirmed),
-        },
-    });
+    // // Make step progress readable
+    // useCopilotReadable({
+    //     description: "Application completion status",
+    //     value: {
+    //         currentStep,
+    //         stepsCompleted: getCompletedSteps(formData, currentStep),
+    //         isContactEmailComplete: !!formData.contact_email,
+    //         isBusinessActivitiesComplete: (formData.business_activities?.length || 0) >= 1,
+    //         isCompanyNamesComplete: !!(formData.company_name_1 && formData.company_name_2 && formData.company_name_3),
+    //         isVisaPackagesComplete: (formData.visa_package_quantity || 0) > 0,
+    //         isShareholderInfoComplete: (formData.number_of_shareholders || 0) > 0 && (formData.total_shares || 0) > 0,
+    //         isShareholderDetailsComplete: formData.shareholders?.length === formData.number_of_shareholders,
+    //         isPassportReviewComplete: formData.shareholders?.every((sh: ShareholderData) => sh.is_passport_confirmed),
+    //     },
+    // });
 };
 
 /**
@@ -69,8 +72,6 @@ export const useCopilotFormState = (
  */
 function getCompletedSteps(formData: Partial<FormData>, currentStep: FormStep): string[] {
     const completed: string[] = [];
-    console.log(currentStep)
-    
     if (formData.contact_email) completed.push('contact-email');
     if ((formData.business_activities?.length || 0) >= 1) completed.push('business-activities');
     if (formData.company_name_1 && formData.company_name_2 && formData.company_name_3) completed.push('company-names');

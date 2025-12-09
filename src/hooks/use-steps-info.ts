@@ -4,7 +4,8 @@ export const useStepsInfo = () => {
     useCopilotReadable({
         description: 'Instructions about the email-contact step.',
         value: `
-            На этом этапе юзеру нужно указать контактную информацию (его email).
+            На этом этапе юзеру нужно указать контактную информацию в инпут поле в форме (его email).
+            Тебе не нужно у него просить его вводить email в чате. 
         `,
     })
     useCopilotReadable({

@@ -171,7 +171,7 @@ const mapApiResponseToFormData = (data: LicenseApplicationResponse, session_id: 
 
 export const CreateLicenseApplicationScreen = () => {
   const [searchParam] = useSearchParams()
-  const {sendMessage} = useCopilotChatHeadless_c()
+  const {sendMessage, reset} = useCopilotChatHeadless_c()
   const application_id: string = searchParam.get('application_id') as string;
   const session_id: string = searchParam.get('session_id') as string;
   const [currentStep, setCurrentStep] = useState<FormStep>('contact-email');
@@ -191,6 +191,10 @@ export const CreateLicenseApplicationScreen = () => {
         total_shares: 0,
         shareholders: [],
     });
+
+    useEffect(() => {
+        reset()
+    }, [])
 
     // Fetch existing application data
     const { data: existingApplication, isLoading: isLoadingApplication } = useGetLicenseApplication(application_id);
@@ -267,11 +271,13 @@ export const CreateLicenseApplicationScreen = () => {
     useCopilotFormState(formData, currentStep);
     useEffect(() => {
         // if (currentStep !== 'contact-email') {
+        setTimeout(() => {
             sendMessage({
                 id: `${new Date().getTime()}`,
                 content: `Покажи show_step_transition`,
                 role: 'developer',
             })
+        }, 500)
         // }
   }, [currentStep])
 

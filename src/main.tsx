@@ -19,16 +19,16 @@ createRoot(document.getElementById("root")!).render(
         <ThemeProvider>
             <QueryClientProvider client={queryClient}>
                 <AuthProvider>
-                    <CopilotKit 
+                    <CopilotKit
                         publicApiKey="ck_pub_017bce038f7afc92dd4b8818e4b7ab5d"
-                        agent="adlex"
+                        agent="pydantic_agent"
                         headers={{
                             Authorization: `Bearer ${useAuthStore.getState().accessToken}`
                         }}
                         properties={{
                             authorization: useAuthStore.getState().accessToken
                         }}
-                        // runtimeUrl="https://agent.adlex.azamat.ai/api/v1/agent"
+                        runtimeUrl="http://localhost:4000/copilotkit"
                     >
                         <BrowserRouter>
                             <RouteProvider>

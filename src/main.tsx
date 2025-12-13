@@ -28,7 +28,7 @@ createRoot(document.getElementById("root")!).render(
                         properties={{
                             authorization: useAuthStore.getState().accessToken
                         }}
-                        runtimeUrl="http://localhost:4000/copilotkit"
+                        runtimeUrl="https://zzggvvyv7ib4hmfjcv2yyisg540qzzmk.lambda-url.eu-north-1.on.aws/copilotkit"
                     >
                         <BrowserRouter>
                             <RouteProvider>

@@ -11,6 +11,7 @@ import { StepShareholderDetails } from './steps/StepShareholderDetails';
 import { StepPayment } from './steps/StepPayment';
 import { StepKYC } from './steps/StepKYC';
 import { StepPassportReview } from './steps/StepPassportReview';
+import { StepDataProcessing } from './steps/StepDataProcessing';
 import { ButtonUtility } from '@/components/base/buttons/button-utility';
 import { useNavigate } from 'react-router';
 
@@ -37,8 +38,9 @@ const STEPS: { id: FormStep; title: string; number: number }[] = [
     { id: 'shareholders-info', title: 'Shareholders', number: 5 },
     { id: 'shareholder-details', title: 'Details', number: 6 },
     { id: 'passport-review', title: 'Passport Review', number: 7 },
-    { id: 'payment', title: 'Payment', number: 8 },
-    { id: 'kyc', title: 'KYC', number: 9 },
+    { id: 'data-processing', title: 'Data Processing', number: 8 },
+    { id: 'payment', title: 'Payment', number: 9 },
+    { id: 'kyc', title: 'KYC', number: 10 },
 ];
 
 export const FormContainer = ({
@@ -134,6 +136,13 @@ export const FormContainer = ({
                         shareholders={formData.shareholders || []}
                         applicationId={formData.application_id || ''}
                         onShareholderChange={handlers.onPassportReviewChange}
+                    />
+                );
+
+            case 'data-processing':
+                return (
+                    <StepDataProcessing
+                        shareholders={formData.shareholders || []}
                     />
                 );
 

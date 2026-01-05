@@ -96,5 +96,7 @@ export type FormStep =
     | 'shareholders-info'
     | 'shareholder-details'
     | 'passport-review'
+    | 'data-processing'
     | 'payment'
     | 'kyc';
+

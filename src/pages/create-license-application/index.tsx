@@ -75,6 +75,7 @@ const STEP_ORDER: FormStep[] = [
     'shareholders-info',
     'shareholder-details',
     'passport-review',
+    'data-processing',
     'payment',
     'kyc',
 ];

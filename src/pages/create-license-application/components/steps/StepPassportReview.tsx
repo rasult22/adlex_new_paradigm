@@ -3,6 +3,8 @@ import { Button } from '@/components/base/buttons/button';
 import { Input } from '@/components/base/input/input';
 import { extractPassportData, type ExtractPassportResponse } from '@/queries';
 import type { ShareholderData } from '../types';
+import { Passport } from '@untitledui/icons';
+import { FeaturedIcon } from '@/components/foundations/featured-icon/featured-icon';
 
 interface StepPassportReviewProps {
   shareholders: ShareholderData[];
@@ -24,9 +26,12 @@ const PassportCard = ({ sh, index, applicationId, onShareholderChange }: { sh: S
   const data = sh.extracted_passport || {};
 
   return (
-    <div className="p-6 rounded-xl bg-secondary ring-1 ring-border-primary space-y-4">
+    <div className="p-6 rounded-xl ring-1 ring-border-secondary space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-primary">Shareholder {index + 1}</h3>
+        <div className='flex gap-2 items-center'>
+          <FeaturedIcon icon={Passport} size='md' color='gray' theme='modern' />
+          <h3 className="text-lg font-semibold text-primary">Shareholder {index + 1}</h3>
+        </div>
         <div className="flex gap-2">
           <Button size="md" onClick={() => mutation.mutate()} isDisabled={mutation.isPending || !sh.backend_id}>
             {mutation.isPending ? 'Extracting…' : 'Extract'}
@@ -43,12 +48,13 @@ const PassportCard = ({ sh, index, applicationId, onShareholderChange }: { sh: S
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Input label='Passport Number' value={data.passport_number || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, passport_number: val } })} size="md" />
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
         <Input label='First Name' value={data.first_name || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, first_name: val } })} size="md" />
-        <Input label='Middle Name' value={data.middle_name || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, middle_name: val } })} size="md" />
         <Input label='Last Name' value={data.last_name || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, last_name: val } })} size="md" />
+        <Input label='Middle Name' value={data.middle_name || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, middle_name: val } })} size="md" />
         <Input label='Date of Birth' value={data.date_of_birth || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, date_of_birth: val } })} size="md" />
+        <div className='bg-border-secondary h-[1px] w-[90%] mx-auto' />
+        <Input label='Passport Number' value={data.passport_number || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, passport_number: val } })} size="md" />
         <Input label='Nationality' value={data.nationality || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, nationality: val } })} size="md" />
         <Input label='Issue Date' value={data.issue_date || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, issue_date: val } })} size="md" />
         <Input label='Expiry Date' value={data.expiry_date || ''} onChange={(val) => onShareholderChange(index, { extracted_passport: { ...data, expiry_date: val } })} size="md" />

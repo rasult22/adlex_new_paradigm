@@ -1,6 +1,6 @@
 import { useCopilotAction, useCopilotChatHeadless_c } from '@copilotkit/react-core';
 import type { FormData, FormStep, FormHandlers, BusinessActivitySelection, ShareholderData, ShareholderRole } from './components/types';
-import { useSearchParams } from 'react-router';
+import { useSearchParams, useNavigate } from 'react-router';
 import { AnimatePresence, motion } from 'motion/react';
 import { AIChat, FormContainer } from './components';
 import { BadgeWithIcon } from '@/components/base/badges/badges';
@@ -14,6 +14,7 @@ import {
     updateShareholderPassport, 
     uploadPassport,
     useGetLicenseApplication,
+    submitToIfza,
     type LicenseApplicationResponse,
 } from '@/queries/license-application';
 import { useStepsInfo } from '@/hooks/use-steps-info';
@@ -171,6 +172,7 @@ const mapApiResponseToFormData = (data: LicenseApplicationResponse, session_id: 
 
 export const CreateLicenseApplicationScreen = () => {
   const [searchParam] = useSearchParams()
+  const navigate = useNavigate()
   const {sendMessage, reset} = useCopilotChatHeadless_c()
   const application_id: string = searchParam.get('application_id') as string;
   const session_id: string = searchParam.get('session_id') as string;
@@ -484,9 +486,17 @@ export const CreateLicenseApplicationScreen = () => {
         if (currentIndex < STEP_ORDER.length - 1) {
             setCurrentStep(STEP_ORDER[currentIndex + 1]);
         } else {
-            // Submit form
-            console.log('Form submitted:', formData);
-            // TODO: Handle form submission
+            // Submit form to IFZA
+            try {
+                if (formData.application_id) {
+                    await submitToIfza(formData.application_id);
+                    // Navigate to home page with success message
+                    navigate('/?submitted=true');
+                }
+            } catch (error) {
+                console.error('Failed to submit to IFZA:', error);
+                setSaveError('Failed to submit application. Please try again.');
+            }
         }
     };
 

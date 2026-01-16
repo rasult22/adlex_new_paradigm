@@ -21,14 +21,14 @@ createRoot(document.getElementById("root")!).render(
                 <AuthProvider>
                     <CopilotKit
                         publicApiKey="ck_pub_017bce038f7afc92dd4b8818e4b7ab5d"
-                        agent="pydantic_agent"
+                        // agent="pydantic_agent"
                         headers={{
                             Authorization: `Bearer ${useAuthStore.getState().accessToken}`
                         }}
                         properties={{
                             authorization: useAuthStore.getState().accessToken
                         }}
-                        runtimeUrl="https://zzggvvyv7ib4hmfjcv2yyisg540qzzmk.lambda-url.eu-north-1.on.aws/copilotkit"
+                        // runtimeUrl="https://zzggvvyv7ib4hmfjcv2yyisg540qzzmk.lambda-url.eu-north-1.on.aws/copilotkit"
                     >
                         <BrowserRouter>
                             <RouteProvider>

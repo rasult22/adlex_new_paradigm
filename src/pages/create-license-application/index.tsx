@@ -1,4 +1,4 @@
-import { useCopilotAction, useCopilotChatHeadless_c } from '@copilotkit/react-core';
+import { useCopilotAction, useCopilotChatInternal } from '@copilotkit/react-core';
 import type { FormData, FormStep, FormHandlers, BusinessActivitySelection, ShareholderData, ShareholderRole } from './components/types';
 import { useSearchParams, useNavigate } from 'react-router';
 import { AnimatePresence, motion } from 'motion/react';
@@ -174,7 +174,7 @@ const mapApiResponseToFormData = (data: LicenseApplicationResponse, session_id: 
 export const CreateLicenseApplicationScreen = () => {
   const [searchParam] = useSearchParams()
   const navigate = useNavigate()
-  const {sendMessage, reset} = useCopilotChatHeadless_c()
+  const {sendMessage, reset} = useCopilotChatInternal()
   const application_id: string = searchParam.get('application_id') as string;
   const session_id: string = searchParam.get('session_id') as string;
   const [currentStep, setCurrentStep] = useState<FormStep>('contact-email');

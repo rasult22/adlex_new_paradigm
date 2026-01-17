@@ -22,6 +22,7 @@ createRoot(document.getElementById("root")!).render(
                     <CopilotKit
                         publicApiKey="ck_pub_017bce038f7afc92dd4b8818e4b7ab5d"
                         // agent="pydantic_agent"
+                        agent="adlex"
                         headers={{
                             Authorization: `Bearer ${useAuthStore.getState().accessToken}`
                         }}

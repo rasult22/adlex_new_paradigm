@@ -88,7 +88,7 @@ export interface ChatMessage {
 // Re-export API types for convenience
 export type { BusinessActivity, BusinessActivityInput, ShareholderRole };
 
-export type FormStep = 
+export type FormStep =
     | 'contact-email'
     | 'business-activities'
     | 'company-names'
@@ -98,5 +98,7 @@ export type FormStep =
     | 'passport-review'
     | 'data-processing'
     | 'payment'
-    | 'kyc';
+    | 'kyc'
+    | 'e-sign'
+    | 'license-documents-release';
 

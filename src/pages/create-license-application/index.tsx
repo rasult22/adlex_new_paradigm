@@ -78,6 +78,8 @@ const STEP_ORDER: FormStep[] = [
     'data-processing',
     'payment',
     'kyc',
+    'e-sign',
+    'license-documents-release',
 ];
 
 // Determine which step user should be on based on filled data

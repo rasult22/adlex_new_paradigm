@@ -12,6 +12,8 @@ import { StepPayment } from './steps/StepPayment';
 import { StepKYC } from './steps/StepKYC';
 import { StepPassportReview } from './steps/StepPassportReview';
 import { StepDataProcessing } from './steps/StepDataProcessing';
+import { StepESign } from './steps/StepESign';
+import { StepLicenseDocumentsRelease } from './steps/StepLicenseDocumentsRelease';
 import { ButtonUtility } from '@/components/base/buttons/button-utility';
 import { useNavigate } from 'react-router';
 
@@ -41,6 +43,8 @@ const STEPS: { id: FormStep; title: string; number: number }[] = [
     { id: 'data-processing', title: 'Data Processing', number: 8 },
     { id: 'payment', title: 'Payment', number: 9 },
     { id: 'kyc', title: 'KYC', number: 10 },
+    { id: 'e-sign', title: 'E-sign', number: 11 },
+    { id: 'license-documents-release', title: 'Documents Release', number: 12 },
 ];
 
 export const FormContainer = ({
@@ -151,6 +155,12 @@ export const FormContainer = ({
 
             case 'kyc':
                 return <StepKYC />;
+
+            case 'e-sign':
+                return <StepESign />;
+
+            case 'license-documents-release':
+                return <StepLicenseDocumentsRelease />;
 
             default:
                 return null;

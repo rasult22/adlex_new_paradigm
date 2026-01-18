@@ -1,5 +1,6 @@
 import { CheckCircle, XClose, Loading02, AlertCircle } from '@untitledui/icons';
 import type { ShareholderData } from '../types';
+import { AlertFloating } from '@/components/application/alerts/alerts';
 
 type ProcessingStatus = 'pending' | 'processing' | 'success' | 'error';
 
@@ -49,8 +50,10 @@ const StatusBadge = ({ status }: { status: ProcessingStatus }) => {
       );
     case 'error':
       return (
-        <div className="flex items-center gap-2 text-error-primary">
-          <XClose className="size-5" />
+        <div className="flex items-center gap-2 text-error-primary ">
+          <div className='bg-bg-error-secondary p-1 rounded-full flex items-center justify-center'>
+            <XClose className="size-5" />
+          </div>
           <span>Cancelled</span>
         </div>
       );
@@ -72,7 +75,7 @@ const ShareholderRow = ({
 }) => {
   return (
     <div className="space-y-3">
-      <div className="p-4 rounded-lg ring-1 ring-border-secondary flex items-center justify-between">
+      <div className="p-6 rounded-lg ring-1 ring-border-secondary flex items-center justify-between">
         <span className="text-primary font-medium">
           {index + 1}. {name || 'Unnamed Shareholder'}
         </span>
@@ -80,15 +83,7 @@ const ShareholderRow = ({
       </div>
       
       {status === 'error' && errorReason && (
-        <div className="ml-4 p-4 rounded-lg bg-error-secondary ring-1 ring-error-primary/20">
-          <div className="flex items-start gap-2">
-            <AlertCircle className="size-5 text-error-primary shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-semibold text-error-primary">Reason for refusal</p>
-              <p className="text-sm text-tertiary mt-1">{errorReason}</p>
-            </div>
-          </div>
-        </div>
+        <AlertFloating title="Reason for refusal" description={errorReason} color = "error" confirmLabel='' />
       )}
     </div>
   );
@@ -157,24 +152,10 @@ export const StepDataProcessing = ({ shareholders }: StepDataProcessingProps) =>
 
       {/* Status banner */}
       {overallStatus === 'success' && (
-        <div className="p-4 rounded-lg bg-success-secondary ring-1 ring-success-primary/20 flex items-center gap-2">
-          <CheckCircle className="size-5 text-success-primary" />
-          <span className="text-sm text-primary">
-            <strong>Profiles have been successfully updated.</strong>{' '}
-            <span className="text-tertiary">You can continue filling out the application</span>
-          </span>
-        </div>
+        <AlertFloating color='success' confirmLabel='' title="Profiles have been successfully updated." description="You can continue filling out the application" />
       )}
 
-      {overallStatus === 'error' && (
-        <div className="p-4 rounded-lg bg-error-secondary ring-1 ring-error-primary/20 flex items-center gap-2">
-          <AlertCircle className="size-5 text-error-primary" />
-          <span className="text-sm text-primary">
-            <strong>Profile(s) have been rejected.</strong>{' '}
-            <span className="text-tertiary">Please check the details again and correct the error</span>
-          </span>
-        </div>
-      )}
+      {overallStatus === 'error' && (<AlertFloating title="Profile(s) have been rejected." description="Please check the details again and correct the error" color = "error" confirmLabel='' /> )}
     </div>
   );
 };

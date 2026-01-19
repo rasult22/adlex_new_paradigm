@@ -151,7 +151,12 @@ export const FormContainer = ({
                 );
 
             case 'payment':
-                return <StepPayment />;
+                return (
+                    <StepPayment
+                        shareholders={formData.shareholders || []}
+                        visaPackageQuantity={formData.visa_package_quantity || 0}
+                    />
+                );
 
             case 'kyc':
                 return <StepKYC />;

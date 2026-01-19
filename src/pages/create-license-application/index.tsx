@@ -1,4 +1,5 @@
 import { useCopilotAction, useCopilotChatInternal } from '@copilotkit/react-core';
+import { CopilotKit } from '@copilotkit/react-core';
 import type { FormData, FormStep, FormHandlers, BusinessActivitySelection, ShareholderData, ShareholderRole } from './components/types';
 import { useSearchParams, useNavigate } from 'react-router';
 import { AnimatePresence, motion } from 'motion/react';
@@ -8,16 +9,17 @@ import { Dotpoints02 } from '@untitledui/icons';
 import { useEffect, useState } from 'react';
 import { useCopilotFormState } from '@/hooks/use-copilot-form-state';
 import { useMutation } from '@tanstack/react-query';
-import { 
-    LicenseApplicationInput, 
-    updateLicenseApplication, 
-    updateShareholderPassport, 
+import {
+    LicenseApplicationInput,
+    updateLicenseApplication,
+    updateShareholderPassport,
     uploadPassport,
     useGetLicenseApplication,
     submitToIfza,
     type LicenseApplicationResponse,
 } from '@/queries/license-application';
 import { useStepsInfo } from '@/hooks/use-steps-info';
+import { useAuthStore } from '@/stores/auth';
 
 type BusinessActivityState = {
     activity_id: number
@@ -174,6 +176,25 @@ const mapApiResponseToFormData = (data: LicenseApplicationResponse, session_id: 
 };
 
 export const CreateLicenseApplicationScreen = () => {
+    const accessToken = useAuthStore((state) => state.accessToken);
+
+    return (
+        <CopilotKit
+            publicApiKey="ck_pub_017bce038f7afc92dd4b8818e4b7ab5d"
+            agent="adlex"
+            headers={{
+                Authorization: `Bearer ${accessToken}`
+            }}
+            properties={{
+                authorization: accessToken
+            }}
+        >
+            <CreateLicenseApplicationContent />
+        </CopilotKit>
+    );
+};
+
+const CreateLicenseApplicationContent = () => {
   const [searchParam] = useSearchParams()
   const navigate = useNavigate()
   const {sendMessage, reset} = useCopilotChatInternal()

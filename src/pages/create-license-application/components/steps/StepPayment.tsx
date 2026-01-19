@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Check } from '@untitledui/icons';
 import { BadgeWithDot } from '@/components/base/badges/badges';
 import { Button } from '@/components/base/buttons/button';
 import { LoadingIndicator } from '@/components/application/loading-indicator/loading-indicator';
+import type { ShareholderData } from '../types';
 
 type PaymentStatus = 'unpaid' | 'waiting' | 'paid';
 
@@ -12,19 +13,30 @@ interface PaymentItem {
     children?: { label: string; amount: number }[];
 }
 
-const mockPaymentItems: PaymentItem[] = [
-    {
-        label: '4 Visas',
-        amount: 3750,
-        children: [
-            { label: 'Azamat G.', amount: 1250 },
-            { label: 'Rasulzhan T.', amount: 1250 },
-            { label: 'Myrzageldi A.', amount: 1250 },
-        ],
-    },
-    { label: 'Company registration', amount: 5000 },
-    { label: 'Service fee', amount: 100 },
-];
+interface StepPaymentProps {
+    shareholders: ShareholderData[];
+    visaPackageQuantity: number;
+}
+
+const VISA_PRICE_PER_PERSON = 1250;
+const COMPANY_REGISTRATION_FEE = 5000;
+const SERVICE_FEE = 100;
+
+const getShareholderDisplayName = (shareholder: ShareholderData, index: number): string => {
+    const firstName = shareholder.extracted_passport?.first_name;
+    const lastName = shareholder.extracted_passport?.last_name;
+
+    if (firstName && lastName) {
+        return `${firstName} ${lastName.charAt(0)}.`;
+    }
+    if (firstName) {
+        return firstName;
+    }
+    if (shareholder.email) {
+        return shareholder.email.split('@')[0];
+    }
+    return `Shareholder ${index + 1}`;
+};
 
 const formatCurrency = (amount: number) => {
     return `$${amount.toLocaleString()}`;
@@ -61,10 +73,43 @@ const StatusBadge = ({ status }: { status: PaymentStatus }) => {
     );
 };
 
-export const StepPayment = () => {
+export const StepPayment = ({ shareholders, visaPackageQuantity }: StepPaymentProps) => {
     const [status, setStatus] = useState<PaymentStatus>('unpaid');
 
-    const total = mockPaymentItems.reduce((acc, item) => acc + item.amount, 0);
+    const paymentItems = useMemo((): PaymentItem[] => {
+        const items: PaymentItem[] = [];
+
+        // Visa package item with shareholder breakdown
+        if (visaPackageQuantity > 0) {
+            const visaTotal = visaPackageQuantity * VISA_PRICE_PER_PERSON;
+            const shareholderChildren = shareholders.map((sh, idx) => ({
+                label: getShareholderDisplayName(sh, idx),
+                amount: VISA_PRICE_PER_PERSON,
+            }));
+
+            items.push({
+                label: `${visaPackageQuantity} Visa${visaPackageQuantity > 1 ? 's' : ''}`,
+                amount: visaTotal,
+                children: shareholderChildren.length > 0 ? shareholderChildren : undefined,
+            });
+        }
+
+        // Company registration fee
+        items.push({
+            label: 'Company registration',
+            amount: COMPANY_REGISTRATION_FEE,
+        });
+
+        // Service fee
+        items.push({
+            label: 'Service fee',
+            amount: SERVICE_FEE,
+        });
+
+        return items;
+    }, [shareholders, visaPackageQuantity]);
+
+    const total = paymentItems.reduce((acc, item) => acc + item.amount, 0);
 
     const handlePay = () => {
         setStatus('waiting');
@@ -93,7 +138,7 @@ export const StepPayment = () => {
                     {/* Payment breakdown */}
                     <div className="p-6 rounded-xl bg-secondary ring-1 ring-border-primary flex-1">
                         <div className="space-y-4">
-                            {mockPaymentItems.map((item, idx) => (
+                            {paymentItems.map((item, idx) => (
                                 <div key={idx}>
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm font-medium text-primary">{item.label}</span>

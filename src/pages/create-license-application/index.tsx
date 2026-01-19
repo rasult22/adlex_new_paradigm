@@ -84,6 +84,21 @@ const STEP_ORDER: FormStep[] = [
     'license-documents-release',
 ];
 
+const STEP_NAMES: Record<FormStep, string> = {
+    'contact-email': 'Contact Email',
+    'business-activities': 'Business Activities',
+    'company-names': 'Company Names',
+    'visa-packages': 'Visa Packages',
+    'shareholders-info': 'Shareholders Info',
+    'shareholder-details': 'Shareholder Details',
+    'passport-review': 'Passport Review',
+    'data-processing': 'Data Processing',
+    'payment': 'Payment',
+    'kyc': 'KYC',
+    'e-sign': 'E-Sign',
+    'license-documents-release': 'License Documents Release',
+};
+
 // Determine which step user should be on based on filled data
 const determineCurrentStep = (data: LicenseApplicationResponse): FormStep => {
     // Check from the end to find the first completed step
@@ -296,15 +311,13 @@ const CreateLicenseApplicationContent = () => {
     // Sync form state with CopilotKit
     useCopilotFormState(formData, currentStep);
     useEffect(() => {
-        // if (currentStep !== 'contact-email') {
         setTimeout(() => {
             sendMessage({
                 id: `${new Date().getTime()}`,
-                content: `Покажи show_step_transition`,
+                content: `Use the show_step_transition action with these exact parameters: {"currentStepKey": "${currentStep}", "currentStepName": "${STEP_NAMES[currentStep]}"}`,
                 role: 'developer',
             })
         }, 500)
-        // }
   }, [currentStep])
 
     // Form handlers

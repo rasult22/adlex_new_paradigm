@@ -2,6 +2,12 @@ import { useCopilotReadable } from "@copilotkit/react-core"
 
 export const useStepsInfo = () => {
     useCopilotReadable({
+        description: 'CRITICAL instruction for step navigation',
+        value: `ВАЖНО: Когда описываешь шаг после show_step_transition, ВСЕГДА описывай ТОЛЬКО тот шаг который указан в currentStep.
+Даже если данные для этого шага уже заполнены - юзер мог вернуться назад для редактирования.
+НЕ переходи к описанию следующих шагов. Фокусируйся только на текущем.`,
+    })
+    useCopilotReadable({
         description: 'Instructions about the contact-email step.',
         value: `Юзер вводит email в форме. Не проси вводить в чат.`,
     })

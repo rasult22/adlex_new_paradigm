@@ -159,7 +159,11 @@ export const FormContainer = ({
                 );
 
             case 'kyc':
-                return <StepKYC />;
+                return (
+                    <StepKYC
+                        shareholders={formData.shareholders || []}
+                    />
+                );
 
             case 'e-sign':
                 return <StepESign />;

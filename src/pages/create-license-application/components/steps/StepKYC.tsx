@@ -1,24 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Check, XClose, Copy01, LinkExternal02 } from '@untitledui/icons';
 import { BadgeWithDot } from '@/components/base/badges/badges';
 import { Button } from '@/components/base/buttons/button';
 import { AlertFloating } from '@/components/application/alerts/alerts';
+import type { ShareholderData } from '../types';
 
 type KYCStatus = 'not_passed' | 'receiving_data' | 'passed' | 'cancelled';
 type ApplicantStatus = 'pending' | 'loading' | 'success' | 'cancelled';
 
 interface Applicant {
-    id: number;
+    id: string;
     name: string;
     status: ApplicantStatus;
     rejectionReason?: string;
 }
 
-const initialApplicants: Applicant[] = [
-    { id: 1, name: 'Alkhabay Myrzageldi', status: 'pending' },
-    { id: 2, name: 'Zackary Humphrey', status: 'pending' },
-    { id: 3, name: 'Aaliyah Espinoza', status: 'pending' },
-];
+interface StepKYCProps {
+    shareholders: ShareholderData[];
+}
 
 const StatusBadge = ({ status }: { status: KYCStatus }) => {
     if (status === 'not_passed') {
@@ -98,14 +97,51 @@ const ApplicantStatusIndicator = ({ status }: { status: ApplicantStatus }) => {
     return null;
 };
 
-export const StepKYC = () => {
+export const StepKYC = ({ shareholders }: StepKYCProps) => {
     const [status, setStatus] = useState<KYCStatus>('not_passed');
-    const [applicants, setApplicants] = useState<Applicant[]>(initialApplicants);
     const [demoMode, setDemoMode] = useState<'success' | 'cancelled'>('success');
 
-    const handleCompleteVerification = (applicantId: number) => {
+    // Create applicants from shareholders data
+    const initialApplicantsFromShareholders: Applicant[] = shareholders.map((sh, index) => {
+        const firstName = sh.extracted_passport?.first_name || '';
+        const lastName = sh.extracted_passport?.last_name || '';
+        const fullName = firstName || lastName
+            ? `${firstName} ${lastName}`.trim()
+            : sh.email || `Shareholder ${index + 1}`;
+
+        return {
+            id: sh.backend_id || `shareholder-${index}`,
+            name: fullName,
+            status: 'pending' as ApplicantStatus,
+        };
+    });
+
+    const [applicants, setApplicants] = useState<Applicant[]>(initialApplicantsFromShareholders);
+
+    // Update applicants when shareholders change
+    useEffect(() => {
+        const updated: Applicant[] = shareholders.map((sh, index) => {
+            const firstName = sh.extracted_passport?.first_name || '';
+            const lastName = sh.extracted_passport?.last_name || '';
+            const fullName = firstName || lastName
+                ? `${firstName} ${lastName}`.trim()
+                : sh.email || `Shareholder ${index + 1}`;
+
+            const existingApplicant = applicants.find(a => a.id === (sh.backend_id || `shareholder-${index}`));
+
+            return {
+                id: sh.backend_id || `shareholder-${index}`,
+                name: fullName,
+                status: existingApplicant?.status || 'pending' as ApplicantStatus,
+                rejectionReason: existingApplicant?.rejectionReason,
+            };
+        });
+        setApplicants(updated);
+    }, [shareholders]);
+
+    const handleCompleteVerification = (applicantId: string, isFirstApplicant: boolean) => {
         // Set individual applicant to loading
-        setApplicants(prev => prev.map(a => 
+        setApplicants(prev => prev.map(a =>
             a.id === applicantId ? { ...a, status: 'loading' as ApplicantStatus } : a
         ));
         setStatus('receiving_data');
@@ -115,9 +151,9 @@ export const StepKYC = () => {
             setApplicants(prev => {
                 const updated = prev.map(a => {
                     if (a.id === applicantId) {
-                        if (demoMode === 'cancelled' && applicantId === 1) {
-                            return { 
-                                ...a, 
+                        if (demoMode === 'cancelled' && isFirstApplicant) {
+                            return {
+                                ...a,
                                 status: 'cancelled' as ApplicantStatus,
                                 rejectionReason: 'The KYC verification was rejected because the documentation submitted was incomplete. Make sure to provide all necessary documents for a successful review.'
                             };
@@ -228,7 +264,7 @@ export const StepKYC = () => {
                                         <Button size="sm" color="secondary" iconLeading={Copy01} onClick={handleCopyLink}>
                                             Copy the link for KYC
                                         </Button>
-                                        <Button size="sm" color="primary" iconLeading={LinkExternal02} onClick={() => handleCompleteVerification(applicant.id)}>
+                                        <Button size="sm" color="primary" iconLeading={LinkExternal02} onClick={() => handleCompleteVerification(applicant.id, idx === 0)}>
                                             Complete the verification
                                         </Button>
                                     </div>

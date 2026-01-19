@@ -134,9 +134,9 @@ export const StepPayment = ({ shareholders, visaPackageQuantity }: StepPaymentPr
                     <LoadingIndicator type="dot-circle" size="lg" label="Awaiting payment" />
                 </div>
             ) : (
-                <div className="flex gap-6">
+                <div className={`grid grid-cols-2 gap-6 rounded-xl p-4 ${status === 'paid' ? 'border bg-utility-success-50 border-utility-success-200' : 'border border-border-secondary'}`}>
                     {/* Payment breakdown */}
-                    <div className="p-6 rounded-xl bg-secondary ring-1 ring-border-primary flex-1">
+                    <div className="p-6  flex-1">
                         <div className="space-y-4">
                             {paymentItems.map((item, idx) => (
                                 <div key={idx}>
@@ -160,7 +160,7 @@ export const StepPayment = ({ shareholders, visaPackageQuantity }: StepPaymentPr
                     </div>
 
                     {/* Total and Pay button */}
-                    <div className={`p-6 rounded-xl ring-1 flex flex-col justify-between min-w-[200px] ${status === 'paid' ? 'bg-utility-success-50 ring-utility-success-200' : 'bg-secondary ring-border-primary'}`}>
+                    <div className={`p-6 rounded-xl flex flex-col justify-between min-w-[200px] ${status === 'paid' ? 'border border-utility-success-200' : 'border border-border-secondary'}`}>
                         <div>
                             <p className="text-sm text-tertiary mb-1">Total</p>
                             <p className={`text-2xl font-semibold ${status === 'paid' ? 'text-utility-success-700' : 'text-primary'}`}>

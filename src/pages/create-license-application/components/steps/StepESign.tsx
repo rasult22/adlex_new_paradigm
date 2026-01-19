@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Check, LinkExternal02, File06 } from '@untitledui/icons';
+import { Check, LinkExternal02 } from '@untitledui/icons';
 import { BadgeWithDot } from '@/components/base/badges/badges';
 import { Button } from '@/components/base/buttons/button';
+import { PdfIcon } from '@/components/foundations/file-icons';
+import { AlertFloating } from '@/components/application/alerts/alerts';
 
 type ESignStatus = 'not_passed' | 'receiving_data' | 'passed';
 type DocumentStatus = 'pending' | 'signing' | 'receiving' | 'signed';
@@ -172,9 +174,7 @@ export const StepESign = () => {
                     >
                         <div className="flex items-center gap-4">
                             {/* PDF Icon */}
-                            <div className="shrink-0 w-10 h-12 bg-utility-error-50 rounded flex items-center justify-center">
-                                <File06 className="size-5 text-utility-error-600" />
-                            </div>
+                            <PdfIcon className="shrink-0" />
 
                             {/* Document info */}
                             <div className="flex-1 min-w-0">
@@ -196,13 +196,7 @@ export const StepESign = () => {
 
             {/* Success message */}
             {status === 'passed' && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-utility-success-50 ring-1 ring-utility-success-200">
-                    <Check className="size-5 text-utility-success-600" />
-                    <p className="text-sm text-utility-success-700">
-                        <span className="font-semibold">All documents have been signed.</span>{' '}
-                        You can continue filling out the application
-                    </p>
-                </div>
+                <AlertFloating color="success" confirmLabel="" title="All documents have been signed." description="You can continue filling out the application" />
             )}
         </div>
     );

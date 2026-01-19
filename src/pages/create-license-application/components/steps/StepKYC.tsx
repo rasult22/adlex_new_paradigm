@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Check, XClose, Copy01, LinkExternal02, AlertCircle, CheckCircle } from '@untitledui/icons';
+import { Check, XClose, Copy01, LinkExternal02 } from '@untitledui/icons';
 import { BadgeWithDot } from '@/components/base/badges/badges';
 import { Button } from '@/components/base/buttons/button';
+import { AlertFloating } from '@/components/application/alerts/alerts';
 
 type KYCStatus = 'not_passed' | 'receiving_data' | 'passed' | 'cancelled';
 type ApplicantStatus = 'pending' | 'loading' | 'success' | 'cancelled';
@@ -216,7 +217,7 @@ export const StepKYC = () => {
             <div className="space-y-3">
                 {applicants.map((applicant, idx) => (
                     <div key={applicant.id}>
-                        <div className="p-4 rounded-xl bg-secondary ring-1 ring-border-primary">
+                        <div className="p-4 rounded-xl border border-border-secondary">
                             <div className="flex items-center justify-between">
                                 <span className="text-sm font-medium text-primary">
                                     {idx + 1}. {applicant.name}
@@ -237,14 +238,8 @@ export const StepKYC = () => {
                             </div>
                             
                             {applicant.status === 'cancelled' && applicant.rejectionReason && (
-                                <div className="mt-4 p-4 rounded-lg bg-utility-error-50 ring-1 ring-utility-error-200">
-                                    <div className="flex gap-3">
-                                        <AlertCircle className="size-5 text-utility-error-600 shrink-0 mt-0.5" />
-                                        <div>
-                                            <p className="text-sm font-semibold text-utility-error-700">Reason for refusal</p>
-                                            <p className="text-sm text-utility-error-600 mt-1">{applicant.rejectionReason}</p>
-                                        </div>
-                                    </div>
+                                <div className="mt-4">
+                                    <AlertFloating title="Reason for refusal" description={applicant.rejectionReason} color="error" confirmLabel="" />
                                 </div>
                             )}
                         </div>
@@ -254,23 +249,11 @@ export const StepKYC = () => {
 
             {/* Status messages */}
             {status === 'passed' && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-utility-success-50 ring-1 ring-utility-success-200">
-                    <CheckCircle className="size-5 text-utility-success-600" />
-                    <p className="text-sm text-utility-success-700">
-                        <span className="font-semibold">All applicants have successfully passed KYC.</span>{' '}
-                        You can continue filling out the application
-                    </p>
-                </div>
+                <AlertFloating color="success" confirmLabel="" title="All applicants have successfully passed KYC." description="You can continue filling out the application" />
             )}
 
             {status === 'cancelled' && hasRejection && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-utility-error-50 ring-1 ring-utility-error-200">
-                    <AlertCircle className="size-5 text-utility-error-600" />
-                    <p className="text-sm text-utility-error-700">
-                        <span className="font-semibold">Profile(s) have been rejected.</span>{' '}
-                        Please check the details again and correct the error
-                    </p>
-                </div>
+                <AlertFloating title="Profile(s) have been rejected." description="Please check the details again and correct the error" color="error" confirmLabel="" />
             )}
         </div>
     );

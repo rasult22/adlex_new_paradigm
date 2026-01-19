@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Check, Download01, File06, CheckCircle } from '@untitledui/icons';
+import { Check, Download01 } from '@untitledui/icons';
 import { Button } from '@/components/base/buttons/button';
 import { LoadingIndicator } from '@/components/application/loading-indicator/loading-indicator';
+import { PdfIcon } from '@/components/foundations/file-icons';
+import { AlertFloating } from '@/components/application/alerts/alerts';
 
 type ReleaseStatus = 'waiting' | 'approved';
 
@@ -112,7 +114,7 @@ export const StepLicenseDocumentsRelease = () => {
                 <>
                     {/* Congratulations message */}
                     <div className="space-y-4">
-                        <h3 className="text-xl font-semibold text-utility-success-600">Поздравляем!</h3>
+                        <h3 className="text-xl font-semibold text-utility-success-600">Congratulations!</h3>
                         <p className="text-md text-tertiary">
                             Congratulations! Your application to IFZA has been fully approved, and all official documents have been received. This is an important milestone — your company is now legally active, and you can proceed with the next steps: applying for residency visas and opening a bank account.
                         </p>
@@ -123,7 +125,7 @@ export const StepLicenseDocumentsRelease = () => {
 
                     {/* Documents section */}
                     <div className="space-y-4">
-                        <h4 className="text-lg font-semibold text-primary">Документы</h4>
+                        <h4 className="text-lg font-semibold text-primary">Documents</h4>
 
                         <div className="space-y-3">
                             {licenseDocuments.map((document) => (
@@ -133,9 +135,7 @@ export const StepLicenseDocumentsRelease = () => {
                                 >
                                     <div className="flex items-start gap-4">
                                         {/* PDF Icon */}
-                                        <div className="shrink-0 w-10 h-12 bg-utility-error-50 rounded flex items-center justify-center mt-1">
-                                            <File06 className="size-5 text-utility-error-600" />
-                                        </div>
+                                        <PdfIcon className="shrink-0" />
 
                                         {/* Document info */}
                                         <div className="flex-1 min-w-0">
@@ -164,13 +164,7 @@ export const StepLicenseDocumentsRelease = () => {
                     </div>
 
                     {/* Success message */}
-                    <div className="flex items-center gap-3 p-4 rounded-xl bg-utility-success-50 ring-1 ring-utility-success-200">
-                        <CheckCircle className="size-5 text-utility-success-600" />
-                        <p className="text-sm text-utility-success-700">
-                            <span className="font-semibold">Profiles have been successfully updated.</span>{' '}
-                            You can continue filling out the application
-                        </p>
-                    </div>
+                    <AlertFloating color="success" confirmLabel="" title="Profiles have been successfully updated." description="You can continue filling out the application" />
                 </>
             )}
         </div>

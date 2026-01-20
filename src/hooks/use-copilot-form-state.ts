@@ -67,18 +67,15 @@ export const useCopilotFormState = (
     // });
 };
 
-/**
- * Helper function to determine which steps have been completed
- */
-function getCompletedSteps(formData: Partial<FormData>, currentStep: FormStep): string[] {
-    const completed: string[] = [];
-    if (formData.contact_email) completed.push('contact-email');
-    if ((formData.business_activities?.length || 0) >= 1) completed.push('business-activities');
-    if (formData.company_name_1 && formData.company_name_2 && formData.company_name_3) completed.push('company-names');
-    if ((formData.visa_package_quantity || 0) > 0) completed.push('visa-packages');
-    if ((formData.number_of_shareholders || 0) > 0 && (formData.total_shares || 0) > 0) completed.push('shareholders-info');
-    if (formData.shareholders?.length === formData.number_of_shareholders) completed.push('shareholder-details');
-    if (formData.shareholders?.every((sh:any) => sh.is_passport_confirmed)) completed.push('passport-review');
-    
-    return completed;
-}
+// Helper function commented out - currently unused but may be needed for future features
+// function getCompletedSteps(formData: Partial<FormData>, _currentStep: FormStep): string[] {
+//     const completed: string[] = [];
+//     if (formData.contact_email) completed.push('contact-email');
+//     if ((formData.business_activities?.length || 0) >= 1) completed.push('business-activities');
+//     if (formData.company_name_1 && formData.company_name_2 && formData.company_name_3) completed.push('company-names');
+//     if ((formData.visa_package_quantity || 0) > 0) completed.push('visa-packages');
+//     if ((formData.number_of_shareholders || 0) > 0 && (formData.total_shares || 0) > 0) completed.push('shareholders-info');
+//     if (formData.shareholders?.length === formData.number_of_shareholders) completed.push('shareholder-details');
+//     if (formData.shareholders?.every((sh:any) => sh.is_passport_confirmed)) completed.push('passport-review');
+//     return completed;
+// }

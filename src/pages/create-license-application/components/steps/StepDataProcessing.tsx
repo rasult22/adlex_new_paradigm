@@ -1,4 +1,4 @@
-import { CheckCircle, XClose, Loading02, AlertCircle } from '@untitledui/icons';
+import { CheckCircle, XClose, Loading02 } from '@untitledui/icons';
 import type { ShareholderData } from '../types';
 import { AlertFloating } from '@/components/application/alerts/alerts';
 
